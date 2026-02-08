@@ -1,6 +1,7 @@
 // API endpoint URLs
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
+const API_BASE_NO_API = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:4000'
 
 export const API_ENDPOINTS = {
   // Base URL
@@ -143,7 +144,7 @@ export const API_ENDPOINTS = {
     productsFeatured: `${API_BASE}/products/featured`,
     images: `${API_BASE}/images`,
     regions: `${API_BASE}/regions`,
-    config: `${API_BASE}/health/config`,
+    config: `${API_BASE_NO_API}/health/config`,
   },
 
   // Payments endpoints
