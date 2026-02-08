@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VPS Control Panel - Detailed View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3c83f6",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101723",
+                        "surface-dark": "#223149",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "mono": ["Fira Code", "monospace"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-[#223149] bg-surface-light dark:bg-[#101723] px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="size-8 rounded bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">dns</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] dark:text-white">VPS Reseller</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-medium" href="#">Servers</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Billing</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Support</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-lg size-10 hover:bg-slate-100 dark:hover:bg-[#223149] transition-colors text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700" data-alt="User avatar profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAqQB4k5DOeZn9iaZKUzwyE0CGMENbwwxFWP8WHhfRLV4IrIHFsfAEd_VhV5G-BtJqKOQO7GCAAfxOiv1vXbYlJZaaMSQOowycnK2Kp4xEjo0vsV7xidWnziNV8y3UetL_A_deUjNo9ReXqHAIGHktSOjdAmGnKN3toBxYqz80ukmzT80WssJ7uu6M4vmL1xPkRCmjbY2x_JNBoVwnRW-NUaYwaGQUsoiyOAxViaFgXC8GdoFH_TWtNEzNz0LgXj5Sfgnbf7YrTsxm_");'></div>
+</div>
+</div>
+</header>
+<!-- Main Content Layout -->
+<div class="flex-1 flex flex-col w-full max-w-[1200px] mx-auto px-4 md:px-8 py-8 gap-8">
+<!-- Breadcrumbs -->
+<nav class="flex text-sm text-slate-500 dark:text-slate-400">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="mx-2">/</span>
+<a class="hover:text-primary transition-colors" href="#">Servers</a>
+<span class="mx-2">/</span>
+<span class="text-slate-900 dark:text-white font-medium">web-server-01</span>
+</nav>
+<!-- Page Header & Controls -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-4">
+<h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">web-server-01</h1>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-green-500/15 text-green-600 dark:text-green-400 border border-green-500/20">
+<span class="size-2 rounded-full bg-green-500 animate-pulse"></span>
+                        Running
+                    </span>
+</div>
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 font-mono text-sm">
+<span class="material-symbols-outlined text-lg">lan</span>
+<span>192.168.1.45</span>
+<button class="ml-1 p-1 hover:text-primary transition-colors rounded" title="Copy IP">
+<span class="material-symbols-outlined text-base">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-blue-600 text-white text-sm font-semibold rounded-lg shadow-lg shadow-blue-500/20 transition-all">
+<span class="material-symbols-outlined text-[20px]">play_arrow</span>
+                    Start
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-[#2c3f5e] text-slate-900 dark:text-white text-sm font-semibold rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+                    Restart
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-500 text-slate-900 dark:text-white text-sm font-semibold rounded-lg transition-all group">
+<span class="material-symbols-outlined text-[20px] group-hover:text-red-500 transition-colors">stop</span>
+                    Stop
+                </button>
+</div>
+</div>
+<!-- Tabs Navigation -->
+<div class="border-b border-slate-200 dark:border-[#314668]">
+<div class="flex gap-8 overflow-x-auto">
+<a class="flex items-center gap-2 border-b-2 border-primary pb-3 px-1 text-primary font-medium text-sm whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+                    General
+                </a>
+<a class="flex items-center gap-2 border-b-2 border-transparent pb-3 px-1 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium text-sm whitespace-nowrap transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">terminal</span>
+                    Acciones
+                </a>
+<a class="flex items-center gap-2 border-b-2 border-transparent pb-3 px-1 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium text-sm whitespace-nowrap transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">history</span>
+                    Snapshots
+                </a>
+<a class="flex items-center gap-2 border-b-2 border-transparent pb-3 px-1 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium text-sm whitespace-nowrap transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">public</span>
+                    Red
+                </a>
+<a class="flex items-center gap-2 border-b-2 border-transparent pb-3 px-1 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium text-sm whitespace-nowrap transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+                    Configuración
+                </a>
+</div>
+</div>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1: Server Information -->
+<div class="bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-xl p-6 flex flex-col gap-6 shadow-sm">
+<div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">info</span>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-white">Información del Servidor</h3>
+</div>
+<div class="space-y-5">
+<div class="flex items-center justify-between">
+<span class="text-slate-500 dark:text-slate-400 text-sm">Operating System</span>
+<div class="flex items-center gap-2">
+<span class="size-5 flex items-center justify-center">
+<!-- Simple circle to represent Ubuntu logo placeholder -->
+<span class="size-4 rounded-full border-2 border-orange-500 bg-transparent"></span>
+</span>
+<span class="text-slate-900 dark:text-white font-medium text-sm">Ubuntu 20.04 LTS</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-500 dark:text-slate-400 text-sm">Plan</span>
+<div class="flex items-center gap-2">
+<span class="text-slate-900 dark:text-white font-medium text-sm">VPS Pro (4vCPU/8GB)</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-500 dark:text-slate-400 text-sm">Region</span>
+<div class="flex items-center gap-2">
+<img alt="USA Flag" class="rounded-sm w-5 h-auto" data-alt="Small USA flag icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsCeY2iAelMXT7vBm-nzs_9w9Omo1SfUs03U3fvKlj4Kz76oeoRrAKFlyMH0g3a3F6zgR2-Q7Z_1xmprN63X9jf0H4q2ln30vfRlRtmXFL3n9Bs1v8qri0chPt5DWqyHsJaXxMkWYhw4iEkZ9FY3tX4Gmym9lFGXDrLLBHnz4rgt1w1-S4iFtB_0eYApZw0g8i5w75IMicAbAfYvtvEw94UvbNTDu157ceZeMb3-59jDXdRhtwkQ6xICLiCC69ZGvkk41rCNoDeNqd"/>
+<span class="text-slate-900 dark:text-white font-medium text-sm">New York, USA</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-slate-500 dark:text-slate-400 text-sm">Uptime</span>
+<span class="text-slate-900 dark:text-white font-medium text-sm">14d 03h 22m</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Resources -->
+<div class="bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-xl p-6 flex flex-col gap-6 shadow-sm">
+<div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">monitoring</span>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-white">Recursos</h3>
+</div>
+<div class="space-y-6">
+<!-- CPU -->
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400 font-medium">CPU Usage</span>
+<span class="text-slate-900 dark:text-white font-mono font-bold">12%</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 12%"></div>
+</div>
+</div>
+<!-- RAM -->
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400 font-medium">RAM Memory</span>
+<span class="text-slate-900 dark:text-white font-mono font-bold">4.2GB <span class="text-slate-400 font-normal text-xs">/ 8GB</span></span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+<div class="bg-blue-400 h-2 rounded-full" style="width: 52%"></div>
+</div>
+</div>
+<!-- Disk -->
+<div class="space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500 dark:text-slate-400 font-medium">NVMe Disk</span>
+<span class="text-slate-900 dark:text-white font-mono font-bold">45GB <span class="text-slate-400 font-normal text-xs">/ 100GB</span></span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
+<div class="bg-purple-500 h-2 rounded-full" style="width: 45%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Credentials -->
+<div class="bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-xl p-6 flex flex-col gap-6 shadow-sm">
+<div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">vpn_key</span>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-white">Credenciales</h3>
+</div>
+<div class="space-y-5">
+<div class="space-y-1.5">
+<label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Username</label>
+<div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-[#1a2639] border border-slate-200 dark:border-slate-700 rounded-lg group hover:border-primary/50 transition-colors">
+<span class="text-slate-900 dark:text-white font-mono text-sm">root</span>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+</button>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Root Password</label>
+<div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-[#1a2639] border border-slate-200 dark:border-slate-700 rounded-lg group hover:border-primary/50 transition-colors">
+<div class="flex items-center gap-2">
+<span class="text-slate-900 dark:text-white font-mono text-sm tracking-widest">••••••••••••</span>
+</div>
+<div class="flex gap-2">
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">visibility</span>
+</button>
+<button class="text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+</button>
+</div>
+</div>
+<p class="text-xs text-slate-500 mt-2">Use these credentials to access via SSH.</p>
+</div>
+<div class="pt-2">
+<button class="w-full py-2 px-4 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-[#2c3f5e] rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">terminal</span>
+                            Launch Web Console
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Section: Quick Network Glance (Bonus context for 'Detailed View') -->
+<div class="mt-4">
+<div class="bg-surface-light dark:bg-surface-dark border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-500">router</span>
+                        Network Activity (Last 1 Hour)
+                    </h3>
+<select class="bg-transparent text-sm text-slate-500 dark:text-slate-400 border-none outline-none font-medium cursor-pointer hover:text-primary">
+<option>Last 1 Hour</option>
+<option>Last 24 Hours</option>
+<option>Last 7 Days</option>
+</select>
+</div>
+<!-- Abstract Network Graph Representation -->
+<div class="h-48 w-full flex items-end justify-between gap-1 px-2 relative overflow-hidden">
+<!-- Background Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+<div class="w-full border-t border-slate-400 border-dashed"></div>
+<div class="w-full border-t border-slate-400 border-dashed"></div>
+<div class="w-full border-t border-slate-400 border-dashed"></div>
+<div class="w-full border-t border-slate-400 border-dashed"></div>
+</div>
+<!-- Bars -->
+<div class="w-full bg-gradient-to-t from-primary/10 to-primary/5 rounded-lg flex items-end p-0 gap-[2px] h-full" data-alt="Bar chart showing network traffic fluctuation">
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[20%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[35%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[45%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[30%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[25%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[60%]"></div>
+<div class="flex-1 bg-primary/60 rounded-t-sm h-[80%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[55%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[40%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[35%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[20%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[45%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[50%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[30%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[25%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[35%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[40%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[30%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[20%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[25%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[35%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[45%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[30%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[25%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[60%]"></div>
+<div class="flex-1 bg-primary/60 rounded-t-sm h-[85%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[55%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[40%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[35%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[20%]"></div>
+</div>
+</div>
+<div class="flex justify-between mt-2 text-xs text-slate-500">
+<span>00:00</span>
+<span>00:15</span>
+<span>00:30</span>
+<span>00:45</span>
+<span>01:00</span>
+</div>
+</div>
+</div>
+</div>
+</body></html>

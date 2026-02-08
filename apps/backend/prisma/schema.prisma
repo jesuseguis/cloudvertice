@@ -1,0 +1,439 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// USERS & AUTH
+// ==========================================
+
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  passwordHash      String    @map("password_hash")
+  firstName         String?   @map("first_name")
+  lastName          String?   @map("last_name")
+  phone             String?
+  role              UserRole  @default(CUSTOMER)
+  emailVerified     Boolean   @default(false) @map("email_verified")
+  verificationToken String?   @map("verification_token")
+  resetPasswordToken String?  @map("reset_password_token")
+  resetPasswordExpires DateTime? @map("reset_password_expires")
+  lastLogin         DateTime? @map("last_login")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  orders            Order[]
+  vpsInstances      VpsInstance[]
+  sshKeys           SshKey[]
+  transactions      Transaction[]
+  invoices          Invoice[]
+  supportTickets    SupportTicket[]
+  ticketMessages    TicketMessage[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+// ==========================================
+// PRODUCTS
+// ==========================================
+
+model Product {
+  id                String      @id @default(uuid())
+  contaboProductId  String      @unique @map("contabo_product_id") // V91, V92, etc.
+  name              String
+  description       String?     @db.Text
+  basePrice         Decimal     @map("base_price") @db.Decimal(10, 2)
+  sellingPrice      Decimal     @map("selling_price") @db.Decimal(10, 2)
+  ramMb             Int         @map("ram_mb")
+  cpuCores          Int         @map("cpu_cores")
+  diskGb            Int         @map("disk_gb")
+  diskType          DiskType    @map("disk_type")
+  regions           Json        // ['EU', 'US-central', ...]
+  productType       ProductType @default(STANDARD) @map("product_type")
+  contactEmail      String?     @map("contact_email") // Para productos personalizados
+  isActive          Boolean     @default(true) @map("is_active")
+  sortOrder         Int         @default(0) @map("sort_order")
+  showOnHome        Boolean     @default(false) @map("show_on_home") // Mostrar en landing page
+  homeOrder         Int         @default(0) @map("home_order") // Orden en landing page
+  isRecommended     Boolean     @default(false) @map("is_recommended") // Producto recomendado
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  orders            Order[]
+  vpsInstances      VpsInstance[]
+  priceRules        PriceRule[]
+
+  @@map("products")
+}
+
+enum DiskType {
+  NVMe
+  SSD
+  HDD
+}
+
+enum ProductType {
+  STANDARD
+  CUSTOM
+}
+
+model PriceRule {
+  id            String      @id @default(uuid())
+  productId     String      @map("product_id")
+  periodMonths  Int         @map("period_months")
+  discountPercent Decimal   @map("discount_percent") @db.Decimal(5, 2)
+  finalPrice    Decimal     @map("final_price") @db.Decimal(10, 2)
+  isActive      Boolean     @default(true) @map("is_active")
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  product       Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, periodMonths])
+  @@map("price_rules")
+}
+
+// ==========================================
+// REGIONS
+// ==========================================
+
+model Region {
+  id              String   @id @default(uuid())
+  code            String   @unique // EU-CENTRAL-1, US-EAST-1, etc.
+  name            String   // "Europa Central", "US Este", etc.
+  description     String?
+  priceAdjustment Decimal  @default(0) @map("price_adjustment") @db.Decimal(10, 2)
+  isActive        Boolean  @default(true) @map("is_active")
+  sortOrder       Int      @default(0) @map("sort_order")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("regions")
+}
+
+// ==========================================
+// OPERATING SYSTEMS
+// ==========================================
+
+model OperatingSystem {
+  id             String   @id @default(uuid())
+  imageId        String   @unique @map("image_id")
+  name           String
+  priceAdjustment Decimal @default(0) @map("price_adjustment") @db.Decimal(10, 2)
+  isActive       Boolean  @default(true) @map("is_active")
+  sortOrder      Int      @default(0) @map("sort_order")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("operating_systems")
+}
+
+// ==========================================
+// IMAGES / OS
+// ==========================================
+
+model Image {
+  id                String    @id @default(uuid())
+  contaboImageId    String    @unique @map("contabo_image_id")
+  name              String
+  description       String?   @db.Text
+  osType            String    @map("os_type")
+  osVersion         String?   @map("os_version")
+  defaultUser       String?   @map("default_user")
+  minDisk           Int?      @map("min_disk")
+  size              Int?
+  isActive          Boolean   @default(true) @map("is_active")
+  lastSyncedAt      DateTime? @map("last_synced_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  orders            Order[]
+  vpsInstances      VpsInstance[]
+
+  @@map("images")
+}
+
+// ==========================================
+// ORDERS
+// ==========================================
+
+model Order {
+  id                String        @id @default(uuid())
+  orderNumber       String        @unique @map("order_number")
+  userId            String        @map("user_id")
+  productId         String        @map("product_id")
+  status            OrderStatus   @default(PENDING)
+  totalAmount       Decimal       @map("total_amount") @db.Decimal(10, 2)
+  basePrice         Decimal       @map("base_price") @db.Decimal(10, 2)
+  regionPriceAdj    Decimal       @default(0) @map("region_price_adj") @db.Decimal(10, 2)
+  osPriceAdj        Decimal       @default(0) @map("os_price_adj") @db.Decimal(10, 2)
+  currency          String        @default("USD")
+  periodMonths      Int           @default(1) @map("period_months")
+  region            String
+  imageId           String?       @map("image_id")
+  sshKeys           Json?         // Array of SSH key IDs
+  userData          String?       @db.Text @map("user_data") // Cloud-init script
+  paymentMethod     String?       @map("payment_method")
+  paymentStatus     PaymentStatus @default(PENDING) @map("payment_status")
+  adminNotes        String?       @db.Text @map("admin_notes")
+  paidAt            DateTime?     @map("paid_at")
+  completedAt       DateTime?     @map("completed_at")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product           Product     @relation(fields: [productId], references: [id])
+  image             Image?      @relation(fields: [imageId], references: [id])
+  vpsInstance       VpsInstance?
+  transaction       Transaction?
+  invoice           Invoice?
+
+  @@map("orders")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  PROVISIONING
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// ==========================================
+// VPS INSTANCES
+// ==========================================
+
+model VpsInstance {
+  id                    String          @id @default(uuid())
+  userId                String          @map("user_id")
+  orderId               String?         @unique @map("order_id")
+  contaboInstanceId     BigInt?         @unique @map("contabo_instance_id")
+  productId             String          @map("product_id")
+  name                  String          // vmd12345
+  displayName           String?         @map("display_name")
+  status                VpsStatus       @default(PENDING)
+  ipAddress             String?         @map("ip_address")
+  ipV6Address           String?         @map("ip_v6_address")
+  gateway               String?
+  netmaskCidr           Int?            @map("netmask_cidr")
+  macAddress            String?         @map("mac_address")
+  region                String
+  imageId               String?         @map("image_id")
+  osType                String?         @map("os_type")
+  rootPasswordEncrypted String?         @map("root_password_encrypted") @db.Text
+  sshKeyIds             Json?           @map("ssh_key_ids")
+  defaultUser           String?         @map("default_user")
+  assignedAt            DateTime?       @map("assigned_at")
+  expiresAt             DateTime?       @map("expires_at")
+  autoRenew             Boolean         @default(true) @map("auto_renew")
+  suspendedAt           DateTime?       @map("suspended_at")
+  suspensionReason      String?         @map("suspension_reason") // PAYMENT_ISSUE, ADMIN_ACTION, EXPIRED
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order                 Order?          @relation(fields: [orderId], references: [id])
+  product               Product         @relation(fields: [productId], references: [id])
+  image                 Image?          @relation(fields: [imageId], references: [id])
+  snapshots             Snapshot[]
+  vpsActions            VpsAction[]
+
+  @@map("vps_instances")
+}
+
+enum VpsStatus {
+  PENDING
+  PROVISIONING
+  RUNNING
+  STOPPED
+  SUSPENDED
+  TERMINATED
+  EXPIRED
+}
+
+// ==========================================
+// SNAPSHOTS
+// ==========================================
+
+model Snapshot {
+  id                String      @id @default(uuid())
+  vpsInstanceId     String      @map("vps_instance_id")
+  contaboSnapId     String?     @map("contabo_snap_id")
+  name              String
+  description       String?     @db.Text
+  sizeMb            Int?        @map("size_mb")
+  createdAt         DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  vpsInstance       VpsInstance @relation(fields: [vpsInstanceId], references: [id], onDelete: Cascade)
+
+  @@map("snapshots")
+}
+
+// ==========================================
+// VPS ACTIONS LOG
+// ==========================================
+
+model VpsAction {
+  id                String      @id @default(uuid())
+  vpsInstanceId     String      @map("vps_instance_id")
+  actionType        VpsActionType @map("action_type")
+  status            String      @default("PENDING")
+  requestedAt       DateTime    @default(now()) @map("requested_at")
+  completedAt       DateTime?   @map("completed_at")
+  errorMessage      String?     @map("error_message") @db.Text
+
+  // Relations
+  vpsInstance       VpsInstance @relation(fields: [vpsInstanceId], references: [id], onDelete: Cascade)
+
+  @@map("vps_actions")
+}
+
+enum VpsActionType {
+  START
+  STOP
+  RESTART
+  SHUTDOWN
+  RESCUE
+  RESET_PASSWORD
+}
+
+// ==========================================
+// SSH KEYS
+// ==========================================
+
+model SshKey {
+  id                String      @id @default(uuid())
+  userId            String      @map("user_id")
+  name              String
+  publicKey         String      @map("public_key") @db.Text
+  fingerprint       String?
+  createdAt         DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ssh_keys")
+}
+
+// ==========================================
+// TRANSACTIONS & INVOICES
+// ==========================================
+
+model Transaction {
+  id                String      @id @default(uuid())
+  orderId           String?     @unique @map("order_id")
+  userId            String      @map("user_id")
+  amount            Decimal     @db.Decimal(10, 2)
+  currency          String      @default("USD")
+  paymentProvider   String?     @map("payment_provider")
+  providerTxId      String?     @map("provider_tx_id")
+  status            String      @default("PENDING")
+  createdAt         DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  order             Order?      @relation(fields: [orderId], references: [id])
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("transactions")
+}
+
+model Invoice {
+  id                String      @id @default(uuid())
+  orderId           String      @unique @map("order_id")
+  userId            String      @map("user_id")
+  invoiceNumber     String      @unique @map("invoice_number")
+  amount            Decimal     @db.Decimal(10, 2)
+  taxAmount         Decimal?    @map("tax_amount") @db.Decimal(10, 2)
+  total             Decimal     @db.Decimal(10, 2)
+  status            String      @default("PENDING")
+  dueDate           DateTime?   @map("due_date")
+  paidAt            DateTime?   @map("paid_at")
+  pdfUrl            String?     @map("pdf_url")
+  createdAt         DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  order             Order       @relation(fields: [orderId], references: [id])
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("invoices")
+}
+
+// ==========================================
+// SUPPORT TICKETS
+// ==========================================
+
+model SupportTicket {
+  id                String      @id @default(uuid())
+  userId            String      @map("user_id")
+  vpsInstanceId     String?     @map("vps_instance_id")
+  subject           String
+  status            TicketStatus @default(OPEN)
+  priority          TicketPriority @default(NORMAL)
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+  closedAt          DateTime?   @map("closed_at")
+
+  // Relations
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages          TicketMessage[]
+
+  @@map("support_tickets")
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model TicketMessage {
+  id                String      @id @default(uuid())
+  ticketId          String      @map("ticket_id")
+  userId            String      @map("user_id")
+  message           String      @db.Text
+  isAdmin           Boolean     @default(false) @map("is_admin")
+  createdAt         DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  ticket            SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ticket_messages")
+}

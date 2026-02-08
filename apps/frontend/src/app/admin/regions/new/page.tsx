@@ -1,0 +1,171 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAdminRegions } from '@/lib/hooks/use-admin'
+import { Header } from '@/components/layout/header'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { ArrowLeft } from 'lucide-react'
+
+export default function NewRegionPage() {
+  const router = useRouter()
+  const { createRegion, isCreating } = useAdminRegions()
+
+  const [formData, setFormData] = useState({
+    code: '',
+    name: '',
+    description: '',
+    priceAdjustment: 0,
+    sortOrder: 0,
+    isActive: true,
+  })
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    try {
+      await createRegion(formData)
+      router.push('/admin/regions')
+    } catch (error) {
+      console.error('Error creating region:', error)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-background-dark">
+      <Header
+        title="Nueva Región"
+        subtitle="Crea una nueva región con ajuste de precio"
+        actions={
+          <Button variant="ghost" onClick={() => router.push('/admin/regions')}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Volver
+          </Button>
+        }
+      />
+
+      <div className="p-6 lg:p-8">
+        <Card className="max-w-2xl">
+          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            {/* Code */}
+            <div>
+              <label className="block text-sm font-medium text-white mb-2">
+                Código <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.code}
+                onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                placeholder="Ej: EU-CENTRAL-1, US-EAST-1"
+                className="w-full px-4 py-2 bg-background-dark border border-border-dark rounded-lg text-white placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <p className="text-xs text-text-secondary mt-1">
+                Código único para identificar la región
+              </p>
+            </div>
+
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-medium text-white mb-2">
+                Nombre <span className="text-red-400">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Ej: Europa Central, US Este"
+                className="w-full px-4 py-2 bg-background-dark border border-border-dark rounded-lg text-white placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-medium text-white mb-2">
+                Descripción
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Descripción de la región..."
+                rows={3}
+                className="w-full px-4 py-2 bg-background-dark border border-border-dark rounded-lg text-white placeholder-text-secondary focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+              />
+            </div>
+
+            {/* Price Adjustment */}
+            <div>
+              <label className="block text-sm font-medium text-white mb-2">
+                Ajuste de Precio
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">$</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.priceAdjustment}
+                  onChange={(e) => setFormData({ ...formData, priceAdjustment: parseFloat(e.target.value) || 0 })}
+                  className="w-full pl-8 pr-4 py-2 bg-background-dark border border-border-dark rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+              <p className="text-xs text-text-secondary mt-1">
+                Valor positivo aumenta el precio, negativo lo disminuye
+              </p>
+            </div>
+
+            {/* Sort Order */}
+            <div>
+              <label className="block text-sm font-medium text-white mb-2">
+                Orden de Visualización
+              </label>
+              <input
+                type="number"
+                value={formData.sortOrder}
+                onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
+                className="w-full px-4 py-2 bg-background-dark border border-border-dark rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <p className="text-xs text-text-secondary mt-1">
+                Menor valor aparece primero en la lista
+              </p>
+            </div>
+
+            {/* Is Active */}
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="isActive"
+                checked={formData.isActive}
+                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                className="w-5 h-5 rounded border-border-dark bg-background-dark text-primary focus:ring-2 focus:ring-primary"
+              />
+              <label htmlFor="isActive" className="text-sm font-medium text-white">
+                Región activa
+              </label>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-4 border-t border-border-dark">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => router.push('/admin/regions')}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                disabled={isCreating}
+                className="flex-1"
+              >
+                {isCreating ? 'Creando...' : 'Crear Región'}
+              </Button>
+            </div>
+          </form>
+        </Card>
+      </div>
+    </div>
+  )
+}

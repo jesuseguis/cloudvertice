@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>VPS Pricing &amp; Catalog</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3c83f6",
+                        "primary-hover": "#2563eb",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101723",
+                        "card-dark": "#182334",
+                        "card-border": "#223149",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for better aesthetic in dark mode */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #101723;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #223149;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3c83f6;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 w-full border-b border-solid border-gray-200 dark:border-[#223149] bg-white/90 dark:bg-[#101723]/90 backdrop-blur-md">
+<div class="px-4 md:px-10 flex items-center justify-between py-3 max-w-[1440px] mx-auto w-full">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">dns</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">VPS Reseller</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-8 items-center">
+<div class="flex items-center gap-6">
+<a class="text-slate-600 dark:text-[#90a7cb] hover:text-primary dark:hover:text-white text-sm font-medium leading-normal transition-colors" href="#">Dashboard</a>
+<a class="text-slate-900 dark:text-white text-sm font-medium leading-normal" href="#">Catalog</a>
+<a class="text-slate-600 dark:text-[#90a7cb] hover:text-primary dark:hover:text-white text-sm font-medium leading-normal transition-colors" href="#">Support</a>
+<a class="text-slate-600 dark:text-[#90a7cb] hover:text-primary dark:hover:text-white text-sm font-medium leading-normal transition-colors" href="#">Billing</a>
+</div>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile avatar showing a smiling face" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuClXye47y0onKCEQUyr2Xohhquvqm5wm5VgtSL-rn7QO5bHNDcS6_2YVGFKKoHsGNHCNsC0n9nTQPvP8Wg7CtcZCcHPQMnZsnzMTwipHJdoDywVtovVsneZIzl0-DAxLAEtNyKTnQSlH36N8KeWyTShqGHdr0uPWvIeodtuBJhHdzGJ7VyNlD9pyAcYq5y33JA1v-HgM1xNkUst6SrZPDHoixNpu6V20A_6jZqFTpN76iB1m7FmigEo6J2pBZKtxz-lsjSNDwMkZ1j0");'></div>
+</div>
+<!-- Mobile Menu Icon -->
+<div class="md:hidden text-white">
+<span class="material-symbols-outlined">menu</span>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow flex justify-center py-8 px-4 sm:px-6 lg:px-8">
+<div class="w-full max-w-[1280px] flex flex-col gap-8">
+<!-- Page Heading -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-4 border-b border-[#223149]/50">
+<div class="flex flex-col gap-2">
+<h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Nuestros Planes VPS</h1>
+<p class="text-slate-500 dark:text-[#90a7cb] text-base font-normal leading-normal max-w-2xl">
+                        High-performance NVMe cloud servers deployed in seconds. Scalable, secure, and ready for your business.
+                    </p>
+</div>
+</div>
+<!-- Filters & Controls -->
+<div class="flex flex-col lg:flex-row gap-4 lg:items-center justify-between sticky top-[70px] z-40 py-4 bg-background-light dark:bg-background-dark/95 backdrop-blur-sm -mx-4 px-4 lg:mx-0 lg:px-0">
+<!-- Monthly/Annual Toggle -->
+<div class="flex items-center">
+<div class="flex h-12 bg-gray-200 dark:bg-[#223149] p-1.5 rounded-xl w-full sm:w-auto">
+<label class="flex-1 sm:flex-none cursor-pointer flex items-center justify-center rounded-lg px-6 py-1.5 transition-all has-[:checked]:bg-white dark:has-[:checked]:bg-[#101723] has-[:checked]:shadow-sm has-[:checked]:text-primary dark:has-[:checked]:text-white text-slate-500 dark:text-[#90a7cb] text-sm font-bold">
+<span class="truncate">Monthly</span>
+<input checked="" class="invisible w-0 absolute" name="billing-cycle" type="radio" value="Monthly"/>
+</label>
+<label class="flex-1 sm:flex-none cursor-pointer flex items-center justify-center rounded-lg px-6 py-1.5 transition-all has-[:checked]:bg-white dark:has-[:checked]:bg-[#101723] has-[:checked]:shadow-sm has-[:checked]:text-primary dark:has-[:checked]:text-white text-slate-500 dark:text-[#90a7cb] text-sm font-bold">
+<span class="truncate">Annual <span class="text-primary text-xs ml-1">(-20%)</span></span>
+<input class="invisible w-0 absolute" name="billing-cycle" type="radio" value="Annual"/>
+</label>
+</div>
+</div>
+<!-- Dropdown Filters -->
+<div class="flex gap-3 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-200 dark:border-[#314668] bg-white dark:bg-[#182334] px-4 hover:border-primary transition-colors group">
+<span class="material-symbols-outlined text-slate-400 dark:text-[#90a7cb] group-hover:text-primary text-xl">public</span>
+<p class="text-slate-700 dark:text-white text-sm font-medium">Region: <span class="text-primary">US East</span></p>
+<span class="material-symbols-outlined text-slate-400 dark:text-white text-xl">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-200 dark:border-[#314668] bg-white dark:bg-[#182334] px-4 hover:border-primary transition-colors group">
+<span class="material-symbols-outlined text-slate-400 dark:text-[#90a7cb] group-hover:text-primary text-xl">storage</span>
+<p class="text-slate-700 dark:text-white text-sm font-medium">Disk: <span class="text-primary">NVMe</span></p>
+<span class="material-symbols-outlined text-slate-400 dark:text-white text-xl">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-200 dark:border-[#314668] bg-white dark:bg-[#182334] px-4 hover:border-primary transition-colors group">
+<span class="material-symbols-outlined text-slate-400 dark:text-[#90a7cb] group-hover:text-primary text-xl">filter_list</span>
+<p class="text-slate-700 dark:text-white text-sm font-medium">More Filters</p>
+</button>
+</div>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="group flex flex-col gap-4 rounded-xl border border-solid border-gray-200 dark:border-[#314668] bg-white dark:bg-card-dark p-6 hover:border-primary dark:hover:border-primary transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 relative">
+<div class="flex flex-col gap-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">VPS 10 NVMe</h3>
+<p class="flex items-baseline gap-1 text-slate-900 dark:text-white">
+<span class="text-3xl font-black tracking-tight">$9.99</span>
+<span class="text-slate-500 dark:text-[#90a7cb] text-sm font-medium">/mes</span>
+</p>
+</div>
+<button class="w-full h-10 mt-2 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-[#223149] text-slate-900 dark:text-white text-sm font-bold hover:bg-primary hover:text-white dark:hover:bg-primary transition-colors">
+                        Seleccionar Plan
+                    </button>
+<div class="w-full h-px bg-gray-100 dark:bg-[#223149] my-2"></div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            4GB RAM
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            2 vCPU Cores
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            75GB NVMe Storage
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            4TB Bandwidth
+                        </div>
+</div>
+</div>
+<!-- Card 2 (Popular) -->
+<div class="group flex flex-col gap-4 rounded-xl border-2 border-primary/50 bg-white dark:bg-card-dark p-6 hover:border-primary transition-all duration-200 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 relative">
+<div class="absolute -top-3 right-4 bg-primary text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full shadow-md">
+                        Popular
+                    </div>
+<div class="flex flex-col gap-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">VPS 20 Pro</h3>
+<p class="flex items-baseline gap-1 text-slate-900 dark:text-white">
+<span class="text-3xl font-black tracking-tight">$18.99</span>
+<span class="text-slate-500 dark:text-[#90a7cb] text-sm font-medium">/mes</span>
+</p>
+</div>
+<button class="w-full h-10 mt-2 flex items-center justify-center rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary-hover shadow-lg shadow-primary/25 transition-colors">
+                        Seleccionar Plan
+                    </button>
+<div class="w-full h-px bg-gray-100 dark:bg-[#223149] my-2"></div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            8GB RAM
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            4 vCPU Cores
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            150GB NVMe Storage
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            8TB Bandwidth
+                        </div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group flex flex-col gap-4 rounded-xl border border-solid border-gray-200 dark:border-[#314668] bg-white dark:bg-card-dark p-6 hover:border-primary dark:hover:border-primary transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 relative">
+<div class="flex flex-col gap-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">VPS 30 Elite</h3>
+<p class="flex items-baseline gap-1 text-slate-900 dark:text-white">
+<span class="text-3xl font-black tracking-tight">$34.99</span>
+<span class="text-slate-500 dark:text-[#90a7cb] text-sm font-medium">/mes</span>
+</p>
+</div>
+<button class="w-full h-10 mt-2 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-[#223149] text-slate-900 dark:text-white text-sm font-bold hover:bg-primary hover:text-white dark:hover:bg-primary transition-colors">
+                        Seleccionar Plan
+                    </button>
+<div class="w-full h-px bg-gray-100 dark:bg-[#223149] my-2"></div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            16GB RAM
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            8 vCPU Cores
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            300GB NVMe Storage
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            16TB Bandwidth
+                        </div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group flex flex-col gap-4 rounded-xl border border-solid border-gray-200 dark:border-[#314668] bg-white dark:bg-card-dark p-6 hover:border-primary dark:hover:border-primary transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 relative">
+<div class="flex flex-col gap-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">VPS 40 Max</h3>
+<p class="flex items-baseline gap-1 text-slate-900 dark:text-white">
+<span class="text-3xl font-black tracking-tight">$64.99</span>
+<span class="text-slate-500 dark:text-[#90a7cb] text-sm font-medium">/mes</span>
+</p>
+</div>
+<button class="w-full h-10 mt-2 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-[#223149] text-slate-900 dark:text-white text-sm font-bold hover:bg-primary hover:text-white dark:hover:bg-primary transition-colors">
+                        Seleccionar Plan
+                    </button>
+<div class="w-full h-px bg-gray-100 dark:bg-[#223149] my-2"></div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            32GB RAM
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            12 vCPU Cores
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            600GB NVMe Storage
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            32TB Bandwidth
+                        </div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="group flex flex-col gap-4 rounded-xl border border-solid border-gray-200 dark:border-[#314668] bg-white dark:bg-card-dark p-6 hover:border-primary dark:hover:border-primary transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 relative">
+<div class="flex flex-col gap-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">VPS 50 Ultra</h3>
+<p class="flex items-baseline gap-1 text-slate-900 dark:text-white">
+<span class="text-3xl font-black tracking-tight">$99.99</span>
+<span class="text-slate-500 dark:text-[#90a7cb] text-sm font-medium">/mes</span>
+</p>
+</div>
+<button class="w-full h-10 mt-2 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-[#223149] text-slate-900 dark:text-white text-sm font-bold hover:bg-primary hover:text-white dark:hover:bg-primary transition-colors">
+                        Seleccionar Plan
+                    </button>
+<div class="w-full h-px bg-gray-100 dark:bg-[#223149] my-2"></div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            64GB RAM
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            16 vCPU Cores
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            1TB NVMe Storage
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            Unlimited Bandwidth
+                        </div>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="group flex flex-col gap-4 rounded-xl border border-solid border-gray-200 dark:border-[#314668] bg-white dark:bg-card-dark p-6 hover:border-primary dark:hover:border-primary transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 relative">
+<div class="flex flex-col gap-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">VPS 60 Titan</h3>
+<p class="flex items-baseline gap-1 text-slate-900 dark:text-white">
+<span class="text-3xl font-black tracking-tight">$149.99</span>
+<span class="text-slate-500 dark:text-[#90a7cb] text-sm font-medium">/mes</span>
+</p>
+</div>
+<button class="w-full h-10 mt-2 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-[#223149] text-slate-900 dark:text-white text-sm font-bold hover:bg-primary hover:text-white dark:hover:bg-primary transition-colors">
+                        Seleccionar Plan
+                    </button>
+<div class="w-full h-px bg-gray-100 dark:bg-[#223149] my-2"></div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            128GB RAM
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            24 vCPU Cores
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            2TB NVMe Storage
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            Unlimited Bandwidth
+                        </div>
+</div>
+</div>
+<!-- Card 7 -->
+<div class="group flex flex-col gap-4 rounded-xl border border-solid border-gray-200 dark:border-[#314668] bg-white dark:bg-card-dark p-6 hover:border-primary dark:hover:border-primary transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 relative">
+<div class="flex flex-col gap-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">VPS 70 Extreme</h3>
+<p class="flex items-baseline gap-1 text-slate-900 dark:text-white">
+<span class="text-3xl font-black tracking-tight">$249.99</span>
+<span class="text-slate-500 dark:text-[#90a7cb] text-sm font-medium">/mes</span>
+</p>
+</div>
+<button class="w-full h-10 mt-2 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-[#223149] text-slate-900 dark:text-white text-sm font-bold hover:bg-primary hover:text-white dark:hover:bg-primary transition-colors">
+                        Seleccionar Plan
+                    </button>
+<div class="w-full h-px bg-gray-100 dark:bg-[#223149] my-2"></div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            256GB RAM
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            32 vCPU Cores
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            4TB NVMe Storage
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            Unlimited Bandwidth
+                        </div>
+</div>
+</div>
+<!-- Card 8 -->
+<div class="group flex flex-col gap-4 rounded-xl border border-solid border-gray-200 dark:border-[#314668] bg-white dark:bg-card-dark p-6 hover:border-primary dark:hover:border-primary transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 relative opacity-80 hover:opacity-100">
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight">Enterprise</h3>
+<p class="text-slate-900 dark:text-white text-[10px] font-bold tracking-[0.015em] rounded-lg bg-slate-200 dark:bg-[#223149] px-2 py-1 text-center uppercase">Custom</p>
+</div>
+<p class="flex items-baseline gap-1 text-slate-900 dark:text-white mt-2">
+<span class="text-2xl font-bold">Contact Sales</span>
+</p>
+</div>
+<button class="w-full h-10 mt-2 flex items-center justify-center rounded-lg border-2 border-primary text-primary dark:text-white text-sm font-bold hover:bg-primary transition-colors">
+                        Book a Demo
+                    </button>
+<div class="w-full h-px bg-gray-100 dark:bg-[#223149] my-2"></div>
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            Up to 1TB RAM
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            Dedicated Hardware
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            24/7 Priority Support
+                        </div>
+<div class="flex items-center gap-3 text-slate-600 dark:text-gray-300 text-sm">
+<span class="material-symbols-outlined text-primary text-xl">check</span>
+                            Custom SLA
+                        </div>
+</div>
+</div>
+</div>
+<!-- Features Grid (Visual Breaker) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-10 border-t border-[#223149]/50">
+<div class="flex gap-4">
+<div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-2xl">rocket_launch</span>
+</div>
+<div>
+<h4 class="text-white font-bold mb-1">Instant Deployment</h4>
+<p class="text-[#90a7cb] text-sm">Servers are provisioned in less than 60 seconds.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-2xl">security</span>
+</div>
+<div>
+<h4 class="text-white font-bold mb-1">DDoS Protection</h4>
+<p class="text-[#90a7cb] text-sm">L3/L4 protection included with every plan.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-2xl">support_agent</span>
+</div>
+<div>
+<h4 class="text-white font-bold mb-1">24/7 Expert Support</h4>
+<p class="text-[#90a7cb] text-sm">Our team is always online to help you.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="border-t border-solid border-gray-200 dark:border-[#223149] bg-white dark:bg-[#101723] mt-auto">
+<div class="max-w-[1440px] mx-auto px-4 md:px-10 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+<p class="text-slate-500 dark:text-[#90a7cb] text-sm text-center md:text-left">© 2024 VPS Reseller. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="text-slate-500 dark:text-[#90a7cb] hover:text-primary text-sm" href="#">Terms</a>
+<a class="text-slate-500 dark:text-[#90a7cb] hover:text-primary text-sm" href="#">Privacy</a>
+<a class="text-slate-500 dark:text-[#90a7cb] hover:text-primary text-sm" href="#">SLA</a>
+</div>
+</div>
+</footer>
+</body></html>
