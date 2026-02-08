@@ -2,6 +2,16 @@
 
 import { useState, useEffect, Suspense, useCallback, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { useQuery } from '@tanstack/react-query'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
@@ -260,6 +270,7 @@ function CheckoutContent() {
   const [isCreatingPayment, setIsCreatingPayment] = useState(false)
   const [contactFormData, setContactFormData] = useState({ name: '', email: '', message: '' })
   const [isSubmittingContact, setIsSubmittingContact] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
 
   const { data: products = [] } = useQuery({
     queryKey: ['public', 'products'],
@@ -425,6 +436,19 @@ function CheckoutContent() {
     }
   }
 
+  const handleCancel = () => {
+    if (step === 'payment') {
+      setShowCancelDialog(true)
+    } else {
+      router.push('/catalog')
+    }
+  }
+
+  const confirmCancel = () => {
+    setShowCancelDialog(false)
+    router.push('/catalog')
+  }
+
   if (!selectedProduct) {
     return (
       <div className="min-h-screen bg-background-dark flex items-center justify-center">
@@ -443,7 +467,7 @@ function CheckoutContent() {
         <header className="border-b border-border-dark bg-card-dark/80 backdrop-blur">
           <div className="container mx-auto px-4 lg:px-8 h-16 flex items-center justify-between">
             <Logo />
-            <Button variant="ghost" onClick={() => router.back()}>
+            <Button variant="ghost" onClick={handleCancel}>
               Cancelar
             </Button>
           </div>
@@ -487,7 +511,7 @@ function CheckoutContent() {
       <header className="border-b border-border-dark bg-card-dark/80 backdrop-blur">
         <div className="container mx-auto px-4 lg:px-8 h-16 flex items-center justify-between">
           <Logo />
-          <Button variant="ghost" onClick={() => router.back()}>
+          <Button variant="ghost" onClick={handleCancel}>
             Cancelar
           </Button>
         </div>
@@ -703,10 +727,9 @@ function CheckoutContent() {
                         <button
                           type="button"
                           onClick={() => {
-                            const url = new URL(window.location.href)
-                            url.searchParams.set('billing', 'monthly')
-                            window.history.pushState({}, '', url.toString())
-                            window.location.reload()
+                            const params = new URLSearchParams(searchParams.toString())
+                            params.set('billing', 'monthly')
+                            router.push(`?${params.toString()}`, { scroll: false })
                           }}
                           className={`p-4 rounded-lg border text-left transition-colors ${
                             billingPeriod === 'monthly'
@@ -731,10 +754,9 @@ function CheckoutContent() {
                         <button
                           type="button"
                           onClick={() => {
-                            const url = new URL(window.location.href)
-                            url.searchParams.set('billing', 'annual')
-                            window.history.pushState({}, '', url.toString())
-                            window.location.reload()
+                            const params = new URLSearchParams(searchParams.toString())
+                            params.set('billing', 'annual')
+                            router.push(`?${params.toString()}`, { scroll: false })
                           }}
                           className={`p-4 rounded-lg border text-left transition-colors ${
                             billingPeriod === 'annual'
@@ -871,6 +893,24 @@ function CheckoutContent() {
           </div>
         </div>
       </div>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Cancelar el proceso de compra?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Estás a punto de salir del proceso de pago. Si ya creaste una orden, esta quedará en estado pendiente y podrás completarla más tarde desde tu panel.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Volver al pago</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmCancel}>
+              Sí, cancelar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
