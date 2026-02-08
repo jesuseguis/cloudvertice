@@ -1,0 +1,139 @@
+# Docker Compose de Producción para Dokploy
+# Cloud Vertice - Plataforma de Reventa VPS con Contabo API
+#
+# Dokploy utiliza Traefik como proxy reverso, por lo que no es necesario
+# exponer puertos. Los contenedores se comunican internamente.
+#
+# Variables de entorno requeridas (configurar en Dokploy):
+# - POSTGRES_PASSWORD, POSTGRES_USER, POSTGRES_DB
+# - REDIS_PASSWORD (opcional)
+# - JWT_SECRET, JWT_EXPIRES_IN, JWT_REFRESH_EXPIRES_IN
+# - CONTABO_CLIENT_ID, CONTABO_CLIENT_SECRET, CONTABO_API_USER, CONTABO_API_PASSWORD
+# - ENCRYPTION_KEY
+# - STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
+# - SENDGRID_API_KEY, EMAIL_FROM, EMAIL_FROM_NAME
+# - NEXT_PUBLIC_API_URL, NEXT_PUBLIC_APP_URL
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: cloudvertice-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-cloudvertice}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cloudvertice-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: cloudvertice-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes ${REDIS_PASSWORD:+--requirepass $REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cloudvertice-network
+
+  # Backend API
+  # Puerto interno: 4000
+  backend:
+    image: ghcr.io/jesuseguis/cloudvertice-backend:latest
+    container_name: cloudvertice-backend
+    restart: unless-stopped
+    environment:
+      # General
+      NODE_ENV: production
+      PORT: 4000
+
+      # Database
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-cloudvertice}?schema=public
+      REDIS_URL: redis://${REDIS_PASSWORD+:$REDIS_PASSWORD@}redis:6379
+
+      # JWT
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+
+      # Contabo API
+      CONTABO_CLIENT_ID: ${CONTABO_CLIENT_ID}
+      CONTABO_CLIENT_SECRET: ${CONTABO_CLIENT_SECRET}
+      CONTABO_API_USER: ${CONTABO_API_USER}
+      CONTABO_API_PASSWORD: ${CONTABO_API_PASSWORD}
+      CONTABO_API_BASE_URL: ${CONTABO_API_BASE_URL:-https://api.contabo.com}
+
+      # Encryption
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+
+      # Stripe
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+
+      # Email
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      EMAIL_FROM: ${EMAIL_FROM:-noreply@cloudvertice.com}
+      EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-Cloud Vertice}
+
+      # CORS
+      APP_URL: ${APP_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - cloudvertice-network
+
+  # Frontend (Next.js)
+  # Puerto interno: 3000
+  frontend:
+    image: ghcr.io/jesuseguis/cloudvertice-frontend:latest
+    container_name: cloudvertice-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - cloudvertice-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  cloudvertice-network:
+    driver: bridge
