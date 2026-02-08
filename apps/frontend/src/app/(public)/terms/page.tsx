@@ -51,7 +51,7 @@ export default function TermsPage() {
             <section className="mb-8">
               <h3 className="text-lg font-semibold text-white mb-3">2. Descripción del Servicio</h3>
               <div className="space-y-3 text-text-secondary">
-                <p>Cloud Vertice es una plataforma de venta de servidores VPS con infraestructura de terceros.
+                <p>Cloud Vertice es una plataforma de venta de servidores VPS provisionados a través de Contabo.
                 Nuestros servicios incluyen:</p>
                 <ul className="list-disc list-inside space-y-1 ml-4">
                   <li>Venta de planes VPS con diferentes configuraciones</li>
@@ -127,7 +127,7 @@ export default function TermsPage() {
                 <p> Nos esforzamos por mantener una disponibilidad del 99.9%, pero no garantizamos:</p>
                 <ul className="list-disc list-inside space-y-1 ml-4">
                   <li>Interrupciones por mantenimiento programado (con aviso previo)</li>
-                  <li>Fallos causados por proveedores de infraestructura</li>
+                  <li>Fallos causados por terceros (Contabo, proveedores de red)</li>
                   <li>Eventos fuera de nuestro control (desastres naturales, guerras, etc.)</li>
                   <li>Disponibilidad de recursos en regiones específicas</li>
                 </ul>
