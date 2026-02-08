@@ -308,6 +308,14 @@ function CheckoutContent() {
     queryFn: () => publicApi.images(),
   })
 
+  const { data: config } = useQuery({
+    queryKey: ['public', 'config'],
+    queryFn: () => publicApi.config(),
+  })
+
+  const annualDiscountPercent = config?.annualDiscountPercent || 17
+  const annualDiscountMultiplier = config?.annualDiscountMultiplier || 0.83
+
   const selectedProduct = products.find((p: Product) => p.id === productId)
   const typedImages = images as Image[]
   const typedRegions = regions as Region[]
@@ -355,7 +363,7 @@ function CheckoutContent() {
 
     // Apply annual discount
     if (billingPeriod === 'annual') {
-      finalBasePrice = finalBasePrice * 0.83
+      finalBasePrice = finalBasePrice * annualDiscountMultiplier
     }
 
     const regionPriceAdj = selectedRegionData?.priceAdjustment || 0
@@ -777,7 +785,7 @@ function CheckoutContent() {
                             }).format(selectedProduct.sellingPrice * 12)}/año
                           </p>
                           <p className="text-primary text-xs mt-1">
-                            Ahorra 17%
+                            Ahorra {annualDiscountPercent}%
                           </p>
                         </button>
                       </div>
@@ -854,7 +862,7 @@ function CheckoutContent() {
                       <div className="flex justify-between text-sm">
                         <span className="text-text-secondary">Descuento anual</span>
                         <span className="text-green-500">
-                          -{formatPrice(selectedProduct.sellingPrice * 12 * 0.17)}
+                          -{formatPrice(selectedProduct.sellingPrice * 12 * (1 - annualDiscountMultiplier))}
                         </span>
                       </div>
                     )}

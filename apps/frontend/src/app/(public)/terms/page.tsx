@@ -1,13 +1,22 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import { Metadata } from 'next'
 import { Logo } from '@/components/layout/logo'
 import { Link } from '@/components/ui/link'
-
-export const metadata: Metadata = {
-  title: 'Términos de Servicio | Cloud Vertice',
-  description: 'Términos y condiciones de servicio de Cloud Vertice',
-}
+import { publicApi } from '@/lib/api'
 
 export default function TermsPage() {
+  const [annualDiscountPercent, setAnnualDiscountPercent] = useState<number>(17)
+
+  useEffect(() => {
+    publicApi.config().then(config => {
+      setAnnualDiscountPercent(config.annualDiscountPercent)
+    }).catch(() => {
+      // Keep default value
+    })
+  }, [])
+
   return (
     <div className="min-h-screen bg-background-dark">
       {/* Header */}
@@ -114,7 +123,7 @@ export default function TermsPage() {
               <h3 className="text-lg font-semibold text-white mb-3">6. Precios y Pagos</h3>
               <div className="space-y-3 text-text-secondary">
                 <p><strong className="text-white">Facturación:</strong> Los servicios se facturan por adelantado según el plan seleccionado (mensual o anual).</p>
-                <p><strong className="text-white">Descuentos anuales:</strong> Los planes anuales tienen un descuento del 17% aplicado automáticamente.</p>
+                <p><strong className="text-white">Descuentos anuales:</strong> Los planes anuales tienen un descuento del {annualDiscountPercent}% aplicado automáticamente.</p>
                 <p><strong className="text-white">Métodos de pago:</strong> Aceptamos tarjetas de crédito/débito a través de Stripe.</p>
                 <p><strong className="text-white">Renovación automática:</strong> Los servicios se renuevan automáticamente al final del período.</p>
                 <p><strong className="text-white">Cancelación:</strong> Puedes cancelar en cualquier momento desde tu panel. No hay reembolsos por meses parciales usados.</p>

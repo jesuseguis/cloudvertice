@@ -547,6 +547,12 @@ export const publicApi = {
 
   regions: () =>
     request<string[]>('get', API_ENDPOINTS.public.regions),
+
+  config: () =>
+    request<{ annualDiscountPercent: number; annualDiscountMultiplier: number }>(
+      'get',
+      API_ENDPOINTS.public.config
+    ),
 }
 
 // Payments API

@@ -23,4 +23,15 @@ router.get('/db', async (_req, res) => {
   }
 })
 
+// Public configuration endpoint
+router.get('/config', (_req, res) => {
+  const annualDiscountPercent = parseInt(process.env.ANNUAL_DISCOUNT_PERCENT || '17', 10)
+  res.json({
+    data: {
+      annualDiscountPercent,
+      annualDiscountMultiplier: 1 - (annualDiscountPercent / 100),
+    },
+  })
+})
+
 export const healthRouter = router

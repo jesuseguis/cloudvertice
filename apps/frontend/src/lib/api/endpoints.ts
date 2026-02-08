@@ -143,6 +143,7 @@ export const API_ENDPOINTS = {
     productsFeatured: `${API_BASE}/products/featured`,
     images: `${API_BASE}/images`,
     regions: `${API_BASE}/regions`,
+    config: `${API_BASE}/health/config`,
   },
 
   // Payments endpoints

@@ -49,11 +49,19 @@ export default function CatalogPage() {
     queryFn: () => publicApi.products(),
   })
 
+  const { data: config } = useQuery({
+    queryKey: ['public', 'config'],
+    queryFn: () => publicApi.config(),
+  })
+
+  const annualDiscountPercent = config?.annualDiscountPercent || 17
+  const annualDiscountMultiplier = config?.annualDiscountMultiplier || 0.83
+
   const filteredProducts = products.filter((p: Product) => p.isActive)
 
   const formatPrice = (product: Product) => {
     const price = product.sellingPrice
-    const displayedPrice = billingPeriod === 'annual' ? price * 12 * 0.83 : price // 17% desc annual
+    const displayedPrice = billingPeriod === 'annual' ? price * 12 * annualDiscountMultiplier : price
     return new Intl.NumberFormat('es-ES', {
       style: 'currency',
       currency: 'USD',
@@ -107,7 +115,7 @@ export default function CatalogPage() {
             />
           </button>
           <span className={`text-sm ${billingPeriod === 'annual' ? 'text-white' : 'text-text-secondary'}`}>
-            Anual <span className="text-primary text-xs">(ahorra 17%)</span>
+            Anual <span className="text-primary text-xs">(ahorra {annualDiscountPercent}%)</span>
           </span>
         </div>
 
