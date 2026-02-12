@@ -1,4 +1,4 @@
-import { PrismaClient, Order, OrderStatus, UserRole } from '@prisma/client'
+import { PrismaClient, OrderStatus, UserRole } from '@prisma/client'
 import { NotFoundError, BadRequestError, ForbiddenError } from '../middleware/errorHandler'
 import { productService } from './productService'
 
@@ -164,7 +164,7 @@ export class OrderService {
         periodMonths: data.periodMonths,
         region: regionCode,
         imageId: resolvedImageId,
-        sshKeys: data.sshKeyIds || null,
+        sshKeys: data.sshKeyIds ?? undefined,
         userData: data.userData || null,
       },
       include: {

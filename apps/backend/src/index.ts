@@ -5,7 +5,6 @@ import compression from 'compression'
 import morgan from 'morgan'
 import dotenv from 'dotenv'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import { errorHandler } from './middleware/errorHandler'
 import { notFoundHandler } from './middleware/notFoundHandler'
 import { ipRateLimiter } from './middleware/rateLimiter'
@@ -15,7 +14,6 @@ import { productRouter } from './routes/products'
 import { imageRouter } from './routes/images'
 import { orderRouter } from './routes/orders'
 import { paymentRouter } from './routes/payments'
-import { paymentController } from './controllers/paymentController'
 import { vpsRouter } from './routes/vps'
 import { sshKeyRouter } from './routes/sshKeys'
 import { adminRouter } from './routes/admin'
@@ -26,8 +24,6 @@ import { regionRouter } from './routes/regions'
 import { operatingSystemRouter } from './routes/operating-systems'
 
 // Load environment variables from explicit path
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 dotenv.config({ path: path.join(__dirname, '../../.env') })
 
 const app = express()

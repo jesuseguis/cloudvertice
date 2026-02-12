@@ -213,8 +213,8 @@ export class ImageService {
           osType: img.osType || 'Unknown',
           osVersion: img.osVersion || 'Unknown',
           defaultUser: img.defaultUser || null,
-          minDisk: img.minDisk ? Number(img.minDisk) : null,
-          size: img.size ? Number(img.size) : null,
+          minDisk: img.minDisk ? Number(img.minDisk) : undefined,
+          size: img.size ? Number(img.size) : undefined,
           isActive: true,
         }
 
@@ -393,7 +393,7 @@ export class ImageService {
       name: image.name,
       description: image.description,
       osType: image.osType,
-      osVersion: image.osVersion,
+      osVersion: image.osVersion ?? '',
       defaultUser: image.defaultUser,
       minDisk: image.minDisk,
       size: image.size,

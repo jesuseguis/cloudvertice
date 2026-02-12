@@ -278,7 +278,7 @@ export class OperatingSystemService {
     // Process each image
     for (const img of contaboImages) {
       try {
-        const imageId = img.imageId || img.id
+        const imageId = img.imageId || (img as any).id
         const name = img.name || img.displayName || 'Unknown'
 
         const existing = await prisma.operatingSystem.findUnique({
@@ -308,7 +308,7 @@ export class OperatingSystemService {
           created++
         }
       } catch (error) {
-        console.error(`[Contabo Sync] Failed to sync OS ${img.imageId || img.id}:`, error)
+        console.error(`[Contabo Sync] Failed to sync OS ${img.imageId || (img as any).id}:`, error)
         failed++
       }
     }

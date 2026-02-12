@@ -1,4 +1,4 @@
-import { PrismaClient, OrderStatus, VpsStatus, TicketStatus, UserRole } from '@prisma/client'
+import { PrismaClient, OrderStatus, VpsStatus, TicketStatus } from '@prisma/client'
 import { NotFoundError, BadRequestError } from '../middleware/errorHandler'
 import { orderService } from './orderService'
 import { vpsService } from './vpsService'
@@ -138,7 +138,7 @@ export class AdminService {
       prisma.supportTicket.count({
         where: { status: { in: [TicketStatus.OPEN, TicketStatus.IN_PROGRESS] } },
       }),
-      prisma.supportTicket.count({ where: { status: TicketStatus.PENDING } }),
+      prisma.supportTicket.count({ where: { status: TicketStatus.WAITING_CUSTOMER } }),
       prisma.supportTicket.count({ where: { status: TicketStatus.RESOLVED } }),
       // Order counts
       prisma.order.count({ where: { status: OrderStatus.PENDING } }),
@@ -300,7 +300,6 @@ export class AdminService {
       rootPassword: data.rootPassword,
       region: data.region,
       notes: data.notes,
-      hostname: data.hostname,
     })
 
     console.log('[PROVISION SERVICE] VPS created successfully:', vps.id)
@@ -422,7 +421,7 @@ export class AdminService {
         action: action.actionType,
         user: action.vpsInstance.user,
         vpsId: action.vpsInstanceId,
-        createdAt: action.createdAt,
+        createdAt: action.requestedAt,
       })
     })
 
@@ -433,23 +432,13 @@ export class AdminService {
 
   // ==================== Helper Methods ====================
 
-  private async getOrderCounts() {
-    const [pending, paid, processing, provisioning] = await Promise.all([
-      prisma.order.count({ where: { status: OrderStatus.PENDING } }),
-      prisma.order.count({ where: { status: OrderStatus.PAID } }),
-      prisma.order.count({ where: { status: OrderStatus.PROCESSING } }),
-      prisma.order.count({ where: { status: OrderStatus.PROVISIONING } }),
-    ])
-
-    return { pending, paid, processing, provisioning }
-  }
 
   private async getTotalRevenue(): Promise<number> {
     const result = await prisma.order.aggregate({
       where: { status: { not: OrderStatus.CANCELLED } },
       _sum: { totalAmount: true },
     })
-    return result._sum.totalAmount || 0
+    return Number(result._sum.totalAmount) || 0
   }
 
   private async getRevenueInPeriod(startDate: Date, endDate: Date): Promise<number> {
@@ -460,7 +449,7 @@ export class AdminService {
       },
       _sum: { totalAmount: true },
     })
-    return result._sum.totalAmount || 0
+    return Number(result._sum.totalAmount) || 0
   }
 
   private async getRefundsInPeriod(startDate: Date, endDate: Date): Promise<number> {
@@ -471,7 +460,7 @@ export class AdminService {
       },
       _sum: { amount: true },
     })
-    return result._sum.amount || 0
+    return Number(result._sum.amount) || 0
   }
 
   private async getSalesByMonth(startDate: Date, endDate: Date) {
@@ -604,7 +593,7 @@ export class AdminService {
     const monthlyCost =
       allVps.length > 0
         ? allVps.reduce((sum, vps) => {
-            const monthlyPrice = Number(vps.order.totalAmount) / vps.order.periodMonths
+            const monthlyPrice = vps.order ? Number(vps.order.totalAmount) / vps.order.periodMonths : 0
             return sum + monthlyPrice
           }, 0)
         : 0

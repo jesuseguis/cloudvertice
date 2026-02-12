@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
 import { imageService } from '../services/imageService'
-import { NotFoundError } from '../middleware/errorHandler'
 
 /**
  * Get all images with optional filters
@@ -47,7 +46,7 @@ export async function getImage(req: Request, res: Response, next: NextFunction) 
 /**
  * Get available OS types
  */
-export async function getOsTypes(req: Request, res: Response, next: NextFunction) {
+export async function getOsTypes(_req: Request, res: Response, next: NextFunction) {
   try {
     const osTypes = await imageService.getOsTypes()
 
@@ -63,7 +62,7 @@ export async function getOsTypes(req: Request, res: Response, next: NextFunction
 /**
  * Sync images from Contabo (admin only)
  */
-export async function syncImages(req: Request, res: Response, next: NextFunction) {
+export async function syncImages(_req: Request, res: Response, next: NextFunction) {
   try {
     const result = await imageService.syncImagesFromContabo()
 

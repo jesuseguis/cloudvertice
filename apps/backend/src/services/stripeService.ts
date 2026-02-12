@@ -1,12 +1,11 @@
 import Stripe from 'stripe'
-import { PrismaClient, PaymentStatus } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { NotFoundError, BadRequestError } from '../middleware/errorHandler'
-import { orderService } from './orderService'
 
 const prisma = new PrismaClient()
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2023-10-16',
 })
 
 export interface CreatePaymentIntentData {
@@ -66,7 +65,7 @@ export class StripeService {
 
     // Create PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(order.totalAmount * 100), // Convert to cents
+      amount: Math.round(Number(order.totalAmount) * 100), // Convert to cents
       currency: 'usd',
       metadata: {
         orderId: order.id,
@@ -91,7 +90,7 @@ export class StripeService {
     return {
       clientSecret: paymentIntent.client_secret || '',
       paymentIntentId: paymentIntent.id,
-      amount: order.totalAmount,
+      amount: Number(order.totalAmount),
       currency: 'usd',
     }
   }

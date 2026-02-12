@@ -1,6 +1,5 @@
 import { PrismaClient, Region } from '@prisma/client'
 import { NotFoundError, ConflictError, BadRequestError } from '../middleware/errorHandler'
-import { contaboService } from './contaboService'
 
 const prisma = new PrismaClient()
 

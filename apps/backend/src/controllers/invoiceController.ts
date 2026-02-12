@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { invoiceService } from '../services/invoiceService'
-import { NotFoundError, BadRequestError } from '../middleware/errorHandler'
+import { NotFoundError } from '../middleware/errorHandler'
 
 /**
  * Get user's invoices
@@ -32,7 +32,7 @@ export async function getUserInvoices(req: Request, res: Response, next: NextFun
 /**
  * Get all invoices (admin only)
  */
-export async function getAllInvoices(req: Request, res: Response, next: NextFunction) {
+export async function getAllInvoices(_req: Request, res: Response, next: NextFunction) {
   try {
     const invoices = await invoiceService.getAllInvoices()
 
@@ -136,7 +136,7 @@ export async function payInvoice(req: Request, res: Response, next: NextFunction
 /**
  * Get overdue invoices (admin only)
  */
-export async function getOverdueInvoices(req: Request, res: Response, next: NextFunction) {
+export async function getOverdueInvoices(_req: Request, res: Response, next: NextFunction) {
   try {
     const invoices = await invoiceService.getOverdueInvoices()
 
@@ -152,7 +152,7 @@ export async function getOverdueInvoices(req: Request, res: Response, next: Next
 /**
  * Get invoice statistics (admin only)
  */
-export async function getInvoiceStatistics(req: Request, res: Response, next: NextFunction) {
+export async function getInvoiceStatistics(_req: Request, res: Response, next: NextFunction) {
   try {
     const stats = await invoiceService.getInvoiceStatistics()
 
@@ -193,7 +193,7 @@ export async function downloadInvoicePdf(req: Request, res: Response, next: Next
 /**
  * Generate invoices for all paid orders without invoice (admin only, for development)
  */
-export async function generateInvoicesForPaidOrders(req: Request, res: Response, next: NextFunction) {
+export async function generateInvoicesForPaidOrders(_req: Request, res: Response, next: NextFunction) {
   try {
     const result = await invoiceService.generateInvoicesForPaidOrders()
 

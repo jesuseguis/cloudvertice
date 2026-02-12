@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { PrismaClient, UserRole } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { NotFoundError } from '../middleware/errorHandler'
 
 const prisma = new PrismaClient()
@@ -20,7 +20,7 @@ export async function getAllUsers(req: Request, res: Response, next: NextFunctio
 
     // Filter by role if provided
     if (role && role !== 'all') {
-      where.role = role.toUpperCase()
+      where.role = (role as string).toUpperCase()
     }
 
     // Search by email or name
@@ -251,7 +251,7 @@ export async function getUserById(req: Request, res: Response, next: NextFunctio
 /**
  * Get user statistics (admin only)
  */
-export async function getUserStatistics(req: Request, res: Response, next: NextFunction) {
+export async function getUserStatistics(_req: Request, res: Response, next: NextFunction) {
   try {
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)

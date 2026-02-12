@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { PrismaClient, UserRole } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { NotFoundError, ForbiddenError } from './errorHandler'
 
 const prisma = new PrismaClient()

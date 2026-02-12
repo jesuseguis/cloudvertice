@@ -1,15 +1,15 @@
-import { PrismaClient, SSHKey } from '@prisma/client'
+import { PrismaClient, SshKey } from '@prisma/client'
 import { NotFoundError, BadRequestError, ForbiddenError } from '../middleware/errorHandler'
 import { validateSshPublicKey } from '../utils/validators'
 
 const prisma = new PrismaClient()
 
-export interface CreateSSHKeyData {
+export interface CreateSshKeyData {
   name: string
   publicKey: string
 }
 
-export interface SSHKeyInfo {
+export interface SshKeyInfo {
   id: string
   userId: string
   name: string
@@ -22,7 +22,7 @@ export class SshKeyService {
   /**
    * Get user's SSH keys
    */
-  async getUserSshKeys(userId: string): Promise<SSHKeyInfo[]> {
+  async getUserSshKeys(userId: string): Promise<SshKeyInfo[]> {
     const keys = await prisma.sshKey.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
@@ -34,7 +34,7 @@ export class SshKeyService {
   /**
    * Get SSH key by ID
    */
-  async getSshKeyById(id: string, userId: string, isAdmin = false): Promise<SSHKeyInfo> {
+  async getSshKeyById(id: string, userId: string, isAdmin = false): Promise<SshKeyInfo> {
     const key = await prisma.sshKey.findUnique({
       where: { id },
     })
@@ -54,7 +54,7 @@ export class SshKeyService {
   /**
    * Create a new SSH key
    */
-  async createSshKey(userId: string, data: CreateSSHKeyData): Promise<SSHKeyInfo> {
+  async createSshKey(userId: string, data: CreateSshKeyData): Promise<SshKeyInfo> {
     // Validate SSH public key format
     const validation = validateSshPublicKey(data.publicKey)
     if (!validation.valid) {
@@ -123,7 +123,7 @@ export class SshKeyService {
       where: {
         status: { notIn: ['CANCELLED', 'COMPLETED'] },
         sshKeys: {
-          not: null,
+          not: null as any,
         },
       },
     })
@@ -151,7 +151,7 @@ export class SshKeyService {
     id: string,
     userId: string,
     name: string
-  ): Promise<SSHKeyInfo> {
+  ): Promise<SshKeyInfo> {
     const key = await prisma.sshKey.findUnique({
       where: { id },
     })
@@ -188,7 +188,7 @@ export class SshKeyService {
   /**
    * Get SSH keys by IDs
    */
-  async getSshKeysByIds(ids: string[]): Promise<SSHKey[]> {
+  async getSshKeysByIds(ids: string[]): Promise<SshKey[]> {
     return prisma.sshKey.findMany({
       where: { id: { in: ids } },
     })
@@ -215,13 +215,13 @@ export class SshKeyService {
   /**
    * Remove sensitive data from SSH key object
    */
-  private sanitizeSshKey(key: SSHKey): SSHKeyInfo {
+  private sanitizeSshKey(key: SshKey): SshKeyInfo {
     return {
       id: key.id,
       userId: key.userId,
       name: key.name,
       publicKey: key.publicKey,
-      fingerprint: key.fingerprint,
+      fingerprint: key.fingerprint ?? '',
       createdAt: key.createdAt,
     }
   }

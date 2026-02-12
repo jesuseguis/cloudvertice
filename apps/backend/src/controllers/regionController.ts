@@ -44,17 +44,18 @@ export async function getRegion(req: Request, res: Response, next: NextFunction)
 /**
  * Get region by code
  */
-export async function getRegionByCode(req: Request, res: Response, next: NextFunction) {
+export async function getRegionByCode(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { code } = req.params
 
     const region = await regionService.getRegionByCode(code)
 
     if (!region) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: 'Region not found',
       })
+      return
     }
 
     res.json({
@@ -145,7 +146,7 @@ export async function toggleRegionActive(req: Request, res: Response, next: Next
 /**
  * Sync regions from Contabo (admin only)
  */
-export async function syncRegions(req: Request, res: Response, next: NextFunction) {
+export async function syncRegions(_req: Request, res: Response, next: NextFunction) {
   try {
     const result = await regionService.syncRegionsFromContabo()
 

@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express'
-import { TooManyRequestsError } from './errorHandler'
 
 /**
  * Rate limiter using in-memory storage

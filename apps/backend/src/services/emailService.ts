@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer'
-import { BadRequestError } from '../middleware/errorHandler'
 
 /**
  * Email service using SendGrid (or SMTP fallback)

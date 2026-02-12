@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { orderService } from '../services/orderService'
-import { NotFoundError, ForbiddenError } from '../middleware/errorHandler'
+import { NotFoundError } from '../middleware/errorHandler'
 
 /**
  * Get user's orders
@@ -41,7 +41,7 @@ export async function getOrder(req: Request, res: Response, next: NextFunction) 
   try {
     const { id } = req.params
 
-    const order = await orderService.getOrderById(id, req.user?.userId, req.user?.role)
+    const order = await orderService.getOrderById(id, req.user?.userId, req.user?.role as any)
 
     res.json({
       success: true,
@@ -103,7 +103,7 @@ export async function cancelOrder(req: Request, res: Response, next: NextFunctio
  */
 export async function getAllOrders(req: Request, res: Response, next: NextFunction) {
   try {
-    const { status, startDate, endDate, page = '1', limit = '50' } = req.query
+    const { status, startDate, endDate } = req.query
 
     const filters = {
       status: status as any,
@@ -149,7 +149,7 @@ export async function updateOrderStatus(req: Request, res: Response, next: NextF
 /**
  * Get pending orders (admin only)
  */
-export async function getPendingOrders(req: Request, res: Response, next: NextFunction) {
+export async function getPendingOrders(_req: Request, res: Response, next: NextFunction) {
   try {
     const orders = await orderService.getPendingOrders()
 
@@ -189,7 +189,7 @@ export async function assignVpsInstance(req: Request, res: Response, next: NextF
 /**
  * Get order statistics (admin only)
  */
-export async function getOrderStatistics(req: Request, res: Response, next: NextFunction) {
+export async function getOrderStatistics(_req: Request, res: Response, next: NextFunction) {
   try {
     const stats = await orderService.getOrderStatistics()
 

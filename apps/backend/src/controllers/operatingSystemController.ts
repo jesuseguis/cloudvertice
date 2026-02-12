@@ -44,17 +44,18 @@ export async function getOperatingSystem(req: Request, res: Response, next: Next
 /**
  * Get operating system by image ID
  */
-export async function getOperatingSystemByImageId(req: Request, res: Response, next: NextFunction) {
+export async function getOperatingSystemByImageId(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { imageId } = req.params
 
     const operatingSystem = await operatingSystemService.getOperatingSystemByImageId(imageId)
 
     if (!operatingSystem) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: 'Operating system not found',
       })
+      return
     }
 
     res.json({
@@ -126,16 +127,17 @@ export async function deleteOperatingSystem(req: Request, res: Response, next: N
 /**
  * Update price adjustment for an operating system (admin only)
  */
-export async function updateOperatingSystemPrice(req: Request, res: Response, next: NextFunction) {
+export async function updateOperatingSystemPrice(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { id } = req.params
     const { priceAdjustment } = req.body
 
     if (priceAdjustment === undefined || isNaN(Number(priceAdjustment))) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: 'Valid priceAdjustment is required',
       })
+      return
     }
 
     const operatingSystem = await operatingSystemService.updatePrice(id, Number(priceAdjustment))
@@ -172,7 +174,7 @@ export async function toggleOperatingSystemActive(req: Request, res: Response, n
 /**
  * Sync operating systems from Contabo API (admin only)
  */
-export async function syncOperatingSystems(req: Request, res: Response, next: NextFunction) {
+export async function syncOperatingSystems(_req: Request, res: Response, next: NextFunction) {
   try {
     const result = await operatingSystemService.syncFromContabo()
 

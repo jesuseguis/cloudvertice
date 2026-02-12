@@ -128,3 +128,10 @@ export function ConflictError(message: string = 'Conflict'): AppError {
 export function BadRequestError(message: string = 'Bad request'): AppError {
   return createError(message, 400)
 }
+
+/**
+ * Create a 429 Too Many Requests error
+ */
+export function TooManyRequestsError(message: string = 'Too many requests'): AppError {
+  return createError(message, 429)
+}

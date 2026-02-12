@@ -1,5 +1,5 @@
 import { PrismaClient, TicketStatus, TicketPriority, UserRole } from '@prisma/client'
-import { NotFoundError, BadRequestError, ForbiddenError } from '../middleware/errorHandler'
+import { NotFoundError, ForbiddenError } from '../middleware/errorHandler'
 
 const prisma = new PrismaClient()
 

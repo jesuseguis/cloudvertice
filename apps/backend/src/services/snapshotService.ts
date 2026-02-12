@@ -92,7 +92,7 @@ export class SnapshotService {
 
     // Create snapshot via Contabo
     const contaboSnapshot = await contaboService.createSnapshot(
-      vps.contaboInstanceId,
+      vps.contaboInstanceId?.toString() || '',
       data.name,
       data.description
     )
@@ -140,7 +140,7 @@ export class SnapshotService {
 
     // Restore via Contabo
     await contaboService.restoreSnapshot(
-      snapshot.vpsInstance.contaboInstanceId,
+      snapshot.vpsInstance.contaboInstanceId?.toString() || '',
       snapshot.contaboSnapId!
     )
   }
@@ -167,7 +167,7 @@ export class SnapshotService {
 
     // Delete via Contabo
     await contaboService.deleteSnapshot(
-      snapshot.vpsInstance.contaboInstanceId,
+      snapshot.vpsInstance.contaboInstanceId?.toString() || '',
       snapshot.contaboSnapId!
     )
 
@@ -193,7 +193,7 @@ export class SnapshotService {
     }
 
     // Get snapshots from Contabo
-    const contaboSnapshots = await contaboService.getSnapshots(vps.contaboInstanceId)
+    const contaboSnapshots = await contaboService.getSnapshots(vps.contaboInstanceId?.toString() || '')
 
     let created = 0
     let updated = 0

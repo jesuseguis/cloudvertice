@@ -1,4 +1,4 @@
-import { PrismaClient, Product, DiskType } from '@prisma/client'
+import { PrismaClient, DiskType, ProductType } from '@prisma/client'
 import {
   NotFoundError,
   ConflictError,
@@ -31,7 +31,7 @@ const CONTABO_PRODUCT_SPECS: Record<string, {
     ramMb: 4096,
     cpuCores: 2,
     diskGb: 75,
-    diskType: 'NVME',
+    diskType: 'NVMe',
     regions: ['EU-CENTRAL-1', 'US-EAST-1', 'AP-SOUTH-1', 'EU-WEST-1'],
     sortOrder: 1,
   },
@@ -62,7 +62,7 @@ const CONTABO_PRODUCT_SPECS: Record<string, {
     ramMb: 8192,
     cpuCores: 4,
     diskGb: 100,
-    diskType: 'NVME',
+    diskType: 'NVMe',
     regions: ['EU-CENTRAL-1', 'US-EAST-1', 'AP-SOUTH-1', 'EU-WEST-1'],
     sortOrder: 4,
   },
@@ -93,7 +93,7 @@ const CONTABO_PRODUCT_SPECS: Record<string, {
     ramMb: 16384,
     cpuCores: 6,
     diskGb: 200,
-    diskType: 'NVME',
+    diskType: 'NVMe',
     regions: ['EU-CENTRAL-1', 'US-EAST-1', 'AP-SOUTH-1', 'EU-WEST-1'],
     sortOrder: 7,
   },
@@ -114,7 +114,7 @@ const CONTABO_PRODUCT_SPECS: Record<string, {
     ramMb: 32768,
     cpuCores: 8,
     diskGb: 300,
-    diskType: 'NVME',
+    diskType: 'NVMe',
     regions: ['EU-CENTRAL-1', 'US-EAST-1', 'AP-SOUTH-1'],
     sortOrder: 9,
   },
@@ -125,7 +125,7 @@ const CONTABO_PRODUCT_SPECS: Record<string, {
     ramMb: 65536,
     cpuCores: 12,
     diskGb: 400,
-    diskType: 'NVME',
+    diskType: 'NVMe',
     regions: ['EU-CENTRAL-1', 'US-EAST-1'],
     sortOrder: 10,
   },
@@ -333,7 +333,7 @@ export class ProductService {
         diskGb: data.diskGb,
         diskType: data.diskType,
         regions: data.regions,
-        productType: data.productType || 'STANDARD',
+        productType: (data.productType || 'STANDARD') as ProductType,
         contactEmail: data.contactEmail,
         basePrice: data.basePrice,
         sellingPrice: data.sellingPrice,
@@ -382,7 +382,7 @@ export class ProductService {
 
     const updated = await prisma.product.update({
       where: { id },
-      data,
+      data: data as any,
       include: {
         priceRules: true,
       },
@@ -621,7 +621,7 @@ export class ProductService {
     discountPercent: number
   ): Promise<ProductInfo> {
     const product = await prisma.product.findUnique({
-      where: { id },
+      where: { id: productId },
     })
 
     if (!product) {

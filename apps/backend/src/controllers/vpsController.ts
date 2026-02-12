@@ -29,7 +29,7 @@ export async function getUserVpsInstances(req: Request, res: Response, next: Nex
 /**
  * Get all VPS instances (admin only)
  */
-export async function getAllVpsInstances(req: Request, res: Response, next: NextFunction) {
+export async function getAllVpsInstances(_req: Request, res: Response, next: NextFunction) {
   try {
     const instances = await vpsService.getAllVpsInstances()
 
@@ -301,16 +301,17 @@ export async function getActionHistory(req: Request, res: Response, next: NextFu
 /**
  * Suspend VPS instance (admin only)
  */
-export async function suspendVps(req: Request, res: Response, next: NextFunction) {
+export async function suspendVps(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { id } = req.params
     const { reason = 'ADMIN_ACTION' } = req.body
 
     if (!['PAYMENT_ISSUE', 'ADMIN_ACTION', 'EXPIRED'].includes(reason)) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: 'Invalid suspension reason. Must be PAYMENT_ISSUE, ADMIN_ACTION, or EXPIRED',
       })
+      return
     }
 
     await vpsService.suspendVpsInstance(id, reason)
@@ -371,7 +372,7 @@ export async function updateVpsSuspension(req: Request, res: Response, next: Nex
 /**
  * Get VPS statistics (admin only)
  */
-export async function getVpsStatistics(req: Request, res: Response, next: NextFunction) {
+export async function getVpsStatistics(_req: Request, res: Response, next: NextFunction) {
   try {
     const stats = await vpsService.getVpsStatistics()
 
@@ -394,7 +395,7 @@ export async function syncVpsStatus(req: Request, res: Response, next: NextFunct
     const vps = await vpsService.getVpsById(id)
 
     // Get fresh status from Contabo
-    const contaboInstance = await contaboService.getInstance(vps.contaboInstanceId)
+    const contaboInstance = await contaboService.getInstance(vps.contaboInstanceId?.toString() || '')
 
     // Map Contabo status to our status
     const statusMap: Record<string, any> = {
@@ -409,7 +410,7 @@ export async function syncVpsStatus(req: Request, res: Response, next: NextFunct
     // Update VPS
     const updated = await vpsService.updateVpsInstance(id, {
       status: newStatus,
-    })
+    } as any)
 
     res.json({
       success: true,

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { ticketService } from '../services/ticketService'
-import { NotFoundError, ForbiddenError } from '../middleware/errorHandler'
+import { NotFoundError } from '../middleware/errorHandler'
 
 /**
  * Get user's tickets
@@ -74,7 +74,7 @@ export async function getTicket(req: Request, res: Response, next: NextFunction)
       return next(NotFoundError('User not found'))
     }
 
-    const ticket = await ticketService.getTicketById(id, req.user.userId, req.user.role)
+    const ticket = await ticketService.getTicketById(id, req.user.userId, req.user.role as any)
 
     res.json({
       success: true,
@@ -154,7 +154,7 @@ export async function addMessage(req: Request, res: Response, next: NextFunction
     const msg = await ticketService.addMessage(
       id,
       req.user.userId,
-      req.user.role,
+      req.user.role as any,
       {
         message,
         isAdmin,
@@ -182,7 +182,7 @@ export async function closeTicket(req: Request, res: Response, next: NextFunctio
       return next(NotFoundError('User not found'))
     }
 
-    const ticket = await ticketService.closeTicket(id, req.user.userId, req.user.role)
+    const ticket = await ticketService.closeTicket(id, req.user.userId, req.user.role as any)
 
     res.json({
       success: true,
@@ -197,7 +197,7 @@ export async function closeTicket(req: Request, res: Response, next: NextFunctio
 /**
  * Get ticket statistics (admin only)
  */
-export async function getTicketStatistics(req: Request, res: Response, next: NextFunction) {
+export async function getTicketStatistics(_req: Request, res: Response, next: NextFunction) {
   try {
     const stats = await ticketService.getTicketStatistics()
 
@@ -213,7 +213,7 @@ export async function getTicketStatistics(req: Request, res: Response, next: Nex
 /**
  * Get available categories
  */
-export async function getCategories(req: Request, res: Response, next: NextFunction) {
+export async function getCategories(_req: Request, res: Response, next: NextFunction) {
   try {
     const categories = await ticketService.getCategories()
 

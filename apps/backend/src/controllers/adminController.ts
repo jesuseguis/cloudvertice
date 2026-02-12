@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from 'express'
 import { adminService } from '../services/adminService'
 import { contaboService } from '../services/contaboService'
-import { NotFoundError, BadRequestError } from '../middleware/errorHandler'
 
 /**
  * Get dashboard metrics
  */
-export async function getDashboardMetrics(req: Request, res: Response, next: NextFunction) {
+export async function getDashboardMetrics(_req: Request, res: Response, next: NextFunction) {
   try {
     const metrics = await adminService.getDashboardMetrics()
 
@@ -40,7 +39,7 @@ export async function getAnalytics(req: Request, res: Response, next: NextFuncti
 /**
  * Get pending orders for provisioning
  */
-export async function getPendingOrders(req: Request, res: Response, next: NextFunction) {
+export async function getPendingOrders(_req: Request, res: Response, next: NextFunction) {
   try {
     const orders = await adminService.getPendingOrders()
 
@@ -76,7 +75,7 @@ export async function provisionOrder(req: Request, res: Response, next: NextFunc
 /**
  * Get admin alerts
  */
-export async function getAlerts(req: Request, res: Response, next: NextFunction) {
+export async function getAlerts(_req: Request, res: Response, next: NextFunction) {
   try {
     const alerts = await adminService.getAlerts()
 
@@ -110,7 +109,7 @@ export async function getRecentActivity(req: Request, res: Response, next: NextF
 /**
  * List Contabo instances
  */
-export async function listContaboInstances(req: Request, res: Response, next: NextFunction) {
+export async function listContaboInstances(_req: Request, res: Response, next: NextFunction) {
   try {
     const instances = await contaboService.listInstances()
 
@@ -127,7 +126,7 @@ export async function listContaboInstances(req: Request, res: Response, next: Ne
 /**
  * List available (unassigned) Contabo instances
  */
-export async function listAvailableContaboInstances(req: Request, res: Response, next: NextFunction) {
+export async function listAvailableContaboInstances(_req: Request, res: Response, next: NextFunction) {
   try {
     const instances = await adminService.getAvailableContaboInstances()
 

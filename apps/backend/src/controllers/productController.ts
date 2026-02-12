@@ -1,10 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { productService } from '../services/productService'
-import {
-  UnauthorizedError,
-  NotFoundError,
-  BadRequestError,
-} from '../middleware/errorHandler'
+import { BadRequestError } from '../middleware/errorHandler'
 
 /**
  * Get all products with optional filters
@@ -45,7 +41,7 @@ export async function getProducts(req: Request, res: Response, next: NextFunctio
 /**
  * Get products featured on home page
  */
-export async function getFeaturedProducts(req: Request, res: Response, next: NextFunction) {
+export async function getFeaturedProducts(_req: Request, res: Response, next: NextFunction) {
   try {
     const products = await productService.getFeaturedProducts()
 
@@ -163,7 +159,7 @@ export async function deleteProduct(req: Request, res: Response, next: NextFunct
 /**
  * Sync products from Contabo (admin only)
  */
-export async function syncProducts(req: Request, res: Response, next: NextFunction) {
+export async function syncProducts(_req: Request, res: Response, next: NextFunction) {
   try {
     const result = await productService.syncProductsFromContabo()
 
