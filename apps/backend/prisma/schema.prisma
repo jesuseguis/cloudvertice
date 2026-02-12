@@ -187,7 +187,7 @@ model Order {
   periodMonths      Int           @default(1) @map("period_months")
   region            String
   imageId           String?       @map("image_id")
-  sshKeys           Json?         // Array of SSH key IDs
+  sshKeys           Json?         @map("ssh_keys") // Array of SSH key IDs
   userData          String?       @db.Text @map("user_data") // Cloud-init script
   paymentMethod     String?       @map("payment_method")
   paymentStatus     PaymentStatus @default(PENDING) @map("payment_status")

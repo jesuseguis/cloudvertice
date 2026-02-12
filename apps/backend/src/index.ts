@@ -24,7 +24,7 @@ import { regionRouter } from './routes/regions'
 import { operatingSystemRouter } from './routes/operating-systems'
 
 // Load environment variables from explicit path
-dotenv.config({ path: path.join(__dirname, '../../.env') })
+dotenv.config({ path: path.join(__dirname, '../.env') })
 
 const app = express()
 const PORT = process.env.PORT || 4000
