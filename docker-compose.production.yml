@@ -6,11 +6,11 @@
 #   docker compose -f docker-compose.production.yml up -d
 #
 # Variables de entorno:
-#   Crea un archivo .env en la raíz del proyecto (ver .env.example)
-#   o configúralas desde el panel de Dokploy.
+#   Configura las variables desde el panel de Dokploy
+#   o crea un archivo .env (ver .env.example).
 #
-# Dominios (Traefik / Dokploy):
-#   Ajusta las labels traefik.http.routers.*.rule con tu dominio.
+# Nota: el proxy inverso (dominios, TLS) lo gestiona Dokploy
+#   automáticamente; no se necesitan labels de Traefik aquí.
 # ============================================================
 
 name: cloudvertice
@@ -118,12 +118,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.cv-backend.rule=Host(`api.${DOMAIN:-cloudvertice.com}`)"
-      - "traefik.http.routers.cv-backend.entrypoints=websecure"
-      - "traefik.http.routers.cv-backend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.cv-backend.loadbalancer.server.port=4000"
 
   # ──────────────────────────────────────────────────────────
   # Frontend (Next.js 14 — standalone)
@@ -156,17 +150,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.cv-frontend.rule=Host(`${DOMAIN:-cloudvertice.com}`)"
-      - "traefik.http.routers.cv-frontend.entrypoints=websecure"
-      - "traefik.http.routers.cv-frontend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.cv-frontend.loadbalancer.server.port=3000"
-      # Redirigir www → apex
-      - "traefik.http.routers.cv-frontend-www.rule=Host(`www.${DOMAIN:-cloudvertice.com}`)"
-      - "traefik.http.routers.cv-frontend-www.entrypoints=websecure"
-      - "traefik.http.routers.cv-frontend-www.tls.certresolver=letsencrypt"
-      - "traefik.http.middlewares.cv-www-redirect.redirectregex.regex=^https://www\\.(.*)"
-      - "traefik.http.middlewares.cv-www-redirect.redirectregex.replacement=https://$${1}"
-      - "traefik.http.middlewares.cv-www-redirect.redirectregex.permanent=true"
-      - "traefik.http.routers.cv-frontend-www.middlewares=cv-www-redirect"
