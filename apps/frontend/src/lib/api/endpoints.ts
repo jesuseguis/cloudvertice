@@ -1,7 +1,7 @@
 // API endpoint URLs
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api'
-const API_BASE_NO_API = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:4000'
+const API_BASE_NO_API = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, '') || 'http://localhost:4000'
 
 export const API_ENDPOINTS = {
   // Base URL
