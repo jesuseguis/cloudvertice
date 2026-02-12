@@ -100,9 +100,9 @@ services:
       STRIPE_SECRET_KEY:      ${STRIPE_SECRET_KEY:?STRIPE_SECRET_KEY requerido}
       STRIPE_WEBHOOK_SECRET:  ${STRIPE_WEBHOOK_SECRET:?STRIPE_WEBHOOK_SECRET requerido}
       SENDGRID_API_KEY:       ${SENDGRID_API_KEY:-}
-      EMAIL_FROM:             ${EMAIL_FROM:-noreply@cloudvertice.com}
+      EMAIL_FROM:             ${EMAIL_FROM:-noreply@cloud.vertice.com}
       EMAIL_FROM_NAME:        ${EMAIL_FROM_NAME:-Cloud Vertice}
-      APP_URL:                ${APP_URL:-https://cloudvertice.com}
+      APP_URL:                ${APP_URL:-https://cloud.vertice.com}
       ANNUAL_DISCOUNT_PERCENT: ${ANNUAL_DISCOUNT_PERCENT:-17}
     depends_on:
       postgres:
@@ -128,7 +128,8 @@ services:
       dockerfile: docker/Dockerfile.frontend
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.cloudvertice.com}
-        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://cloudvertice.com}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://cloud.vertice.com}
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:-}
     container_name: cloudvertice-frontend
     restart: unless-stopped
     environment:
@@ -136,8 +137,8 @@ services:
       PORT:                  3000
       HOSTNAME:              0.0.0.0
       NEXT_PUBLIC_API_URL:   ${NEXT_PUBLIC_API_URL:-https://api.cloudvertice.com}
-      NEXT_PUBLIC_APP_URL:   ${NEXT_PUBLIC_APP_URL:-https://cloudvertice.com}
-      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+      NEXT_PUBLIC_APP_URL:   ${NEXT_PUBLIC_APP_URL:-https://cloud.vertice.com}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:-}
     depends_on:
       backend:
         condition: service_healthy
