@@ -109,6 +109,12 @@ export const authApi = {
 
   changePassword: (data: ChangePasswordRequest) =>
     request<void>('post', API_ENDPOINTS.auth.changePassword, data),
+
+  forgotPassword: (email: string) =>
+    request<void>('post', API_ENDPOINTS.auth.forgotPassword, { email }),
+
+  resetPassword: (token: string, password: string) =>
+    request<void>('post', API_ENDPOINTS.auth.resetPassword, { token, password }),
 }
 
 // Client VPS API

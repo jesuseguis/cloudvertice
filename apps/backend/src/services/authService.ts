@@ -13,8 +13,11 @@ import {
   UnauthorizedError,
   BadRequestError,
 } from '../middleware/errorHandler'
+import { emailService } from './emailService'
 
 const prisma = new PrismaClient()
+
+const APP_URL = process.env.APP_URL || 'http://localhost:3000'
 
 export interface RegisterData {
   email: string
@@ -74,7 +77,13 @@ export class AuthService {
       },
     })
 
-    // TODO: Send verification email
+    // Send verification email
+    const verificationUrl = `${APP_URL}/verify-email?token=${verificationToken}`
+    await emailService.sendVerificationEmail({
+      email: user.email,
+      firstName: user.firstName || 'Usuario',
+      verificationUrl,
+    })
 
     // Generate tokens
     const tokens = this.generateUserTokens(user)
@@ -176,7 +185,13 @@ export class AuthService {
       },
     })
 
-    // TODO: Send reset email
+    // Send reset email
+    const resetUrl = `${APP_URL}/reset-password?token=${resetPasswordToken}`
+    await emailService.sendPasswordResetEmail({
+      email: user.email,
+      firstName: user.firstName || 'Usuario',
+      resetUrl,
+    })
   }
 
   /**
@@ -255,6 +270,40 @@ export class AuthService {
     await prisma.user.update({
       where: { id: userId },
       data: { passwordHash },
+    })
+  }
+
+  /**
+   * Resend verification email
+   */
+  async resendVerification(userId: string): Promise<void> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    })
+
+    if (!user) {
+      throw NotFoundError('User not found')
+    }
+
+    if (user.emailVerified) {
+      throw BadRequestError('Email already verified')
+    }
+
+    // Generate new verification token if needed
+    let token = user.verificationToken
+    if (!token) {
+      token = this.generateVerificationToken()
+      await prisma.user.update({
+        where: { id: userId },
+        data: { verificationToken: token },
+      })
+    }
+
+    const verificationUrl = `${APP_URL}/verify-email?token=${token}`
+    await emailService.sendVerificationEmail({
+      email: user.email,
+      firstName: user.firstName || 'Usuario',
+      verificationUrl,
     })
   }
 

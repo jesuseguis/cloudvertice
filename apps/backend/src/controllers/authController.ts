@@ -2,8 +2,6 @@ import { Request, Response, NextFunction } from 'express'
 import { authService } from '../services/authService'
 import {
   UnauthorizedError,
-  NotFoundError,
-  BadRequestError,
 } from '../middleware/errorHandler'
 
 /**
@@ -194,17 +192,7 @@ export async function resendVerification(req: Request, res: Response, next: Next
       throw UnauthorizedError('Not authenticated')
     }
 
-    const user = await authService.getUserById(req.user.userId)
-
-    if (!user) {
-      throw NotFoundError('User not found')
-    }
-
-    if (user.emailVerified) {
-      throw BadRequestError('Email already verified')
-    }
-
-    // TODO: Resend verification email
+    await authService.resendVerification(req.user.userId)
 
     res.json({
       success: true,

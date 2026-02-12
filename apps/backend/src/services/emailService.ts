@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer'
 
 /**
- * Email service using SendGrid (or SMTP fallback)
+ * Email service using Brevo (or SMTP fallback)
  */
 
 // Email templates
