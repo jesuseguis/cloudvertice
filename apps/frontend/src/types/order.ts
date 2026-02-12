@@ -29,6 +29,20 @@ export interface Order {
   updatedAt: string
   paidAt?: string | null
   completedAt?: string | null
+  metadata?: {
+    vpsInstanceId?: string
+    contaboInstanceId?: string
+    ipAddress?: string
+    rootPassword?: string
+    provisioningNotes?: string
+  }
+  vpsInstance?: {
+    id: string
+    name: string
+    displayName?: string
+    ipAddress?: string
+    status: string
+  }
 }
 
 export interface OrderItem {
@@ -58,7 +72,7 @@ export interface OrderMetadata {
 }
 
 export interface CreateOrderRequest {
-  items: {
+  items?: {
     productId: string
     quantity: number
     config: {
@@ -67,7 +81,14 @@ export interface CreateOrderRequest {
       imageName: string
     }
   }[]
-  billingPeriod: BillingPeriod
+  billingPeriod?: BillingPeriod
+  // Alternative direct format
+  productId?: string
+  periodMonths?: number
+  regionId?: string
+  osId?: string
+  region?: string
+  imageId?: string
 }
 
 export interface UpdateOrderStatusRequest {

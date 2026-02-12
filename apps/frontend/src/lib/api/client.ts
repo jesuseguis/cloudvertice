@@ -60,10 +60,11 @@ export const authApi = {
     )
 
     // Transform backend response to frontend format
+    const backendRole = response.user.role as unknown as string
     return {
       user: {
         ...response.user,
-        role: response.user.role === 'CUSTOMER' ? 'client' : response.user.role.toLowerCase() as 'client' | 'admin',
+        role: backendRole === 'CUSTOMER' ? 'client' : backendRole.toLowerCase() as 'client' | 'admin',
         name: `${response.user.firstName || ''} ${response.user.lastName || ''}`.trim() || response.user.email,
       },
       token: response.tokens.accessToken,
@@ -78,10 +79,11 @@ export const authApi = {
       data
     )
 
+    const backendRole = response.user.role as unknown as string
     return {
       user: {
         ...response.user,
-        role: response.user.role === 'CUSTOMER' ? 'client' : response.user.role.toLowerCase() as 'client' | 'admin',
+        role: backendRole === 'CUSTOMER' ? 'client' : backendRole.toLowerCase() as 'client' | 'admin',
         name: `${response.user.firstName || ''} ${response.user.lastName || ''}`.trim() || response.user.email,
       },
       token: response.tokens.accessToken,
@@ -93,10 +95,11 @@ export const authApi = {
 
   me: async () => {
     const response = await request<User>('get', API_ENDPOINTS.auth.me)
+    const backendRole = response.role as unknown as string
 
     return {
       ...response,
-      role: response.role === 'CUSTOMER' ? 'client' : response.role.toLowerCase() as 'client' | 'admin',
+      role: backendRole === 'CUSTOMER' ? 'client' : backendRole.toLowerCase() as 'client' | 'admin',
       name: `${response.firstName || ''} ${response.lastName || ''}`.trim() || response.email,
     }
   },
@@ -428,6 +431,7 @@ export const adminApi = {
       autoRenew?: boolean
       suspensionReason?: string
       suspensionExpiry?: string
+      status?: string
     }) =>
       request<VPSInstance>('put', API_ENDPOINTS.admin.vps.updateSuspension(id), data),
 

@@ -292,7 +292,10 @@ export function useAdminAllVps(params?: PaginationParams) {
 
   const query = useQuery<VPSInstance[]>({
     queryKey: ['admin', 'vps', params],
-    queryFn: () => adminApi.vps.list(params),
+    queryFn: async () => {
+      const res = await adminApi.vps.list(params)
+      return Array.isArray(res) ? res : (res as { data?: VPSInstance[] }).data ?? []
+    },
     staleTime: 30000,
   })
 
@@ -371,7 +374,7 @@ export function useAdminTickets(params?: PaginationParams) {
 
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status, priority }: { id: string; status: string; priority?: string }) =>
-      adminApi.tickets.updateStatus(id, status, priority),
+      adminApi.tickets.update(id, { status, priority }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'tickets'] })
       success('Estado actualizado')

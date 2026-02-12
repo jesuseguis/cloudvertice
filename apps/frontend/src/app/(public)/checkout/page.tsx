@@ -126,7 +126,7 @@ function PaymentFormContent({
     if (confirmError) {
       setMessage(confirmError.message || 'Ocurrió un error al procesar el pago')
       toast({
-        variant: 'destructive',
+        variant: 'danger',
         title: 'Error en el pago',
         description: confirmError.message || 'Ocurrió un error al procesar el pago',
       })
@@ -405,7 +405,7 @@ function CheckoutContent() {
 
     if (!selectedProduct || !selectedImage) {
       toast({
-        variant: 'destructive',
+        variant: 'danger',
         title: 'Error',
         description: 'Por favor selecciona todos los campos requeridos',
       })
@@ -435,7 +435,7 @@ function CheckoutContent() {
     } catch (error: unknown) {
       console.error('Error creating payment:', error)
       toast({
-        variant: 'destructive',
+        variant: 'danger',
         title: 'Error',
         description: error instanceof Error ? error.message : 'No se pudo inicializar el pago',
       })
@@ -615,7 +615,7 @@ function CheckoutContent() {
                         onClick={async () => {
                           if (!contactFormData.name || !contactFormData.email || !contactFormData.message) {
                             toast({
-                              variant: 'destructive',
+                              variant: 'danger',
                               title: 'Campos requeridos',
                               description: 'Por favor completa todos los campos',
                             })

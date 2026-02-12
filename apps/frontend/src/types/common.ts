@@ -20,6 +20,8 @@ export interface PaginationParams {
   search?: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
+  role?: string
+  status?: string
 }
 
 export interface ErrorResponse {

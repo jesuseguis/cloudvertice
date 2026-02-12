@@ -25,7 +25,7 @@ export default function DashboardPage() {
   const { vpsList, isLoading: vpsLoading } = useVpsInstances()
   const { orders, isLoading: ordersLoading } = useClientOrders()
 
-  const activeVps = vpsList.filter((v) => v.status === 'running').length
+  const activeVps = vpsList.filter((v) => v.status === 'RUNNING').length
   const activeOrders = orders.filter((o) => o.status === 'COMPLETED' || o.status === 'PAID').length
 
   return (
@@ -190,11 +190,11 @@ export default function DashboardPage() {
                         <div>
                           <p className="text-sm font-medium text-white">{vps.name}</p>
                           <p className="text-xs text-text-secondary">
-                            {vps.specs.cpuCores} vCPU • {vps.specs.ramGB}GB RAM • {vps.specs.diskGB}GB {vps.specs.diskType}
+                            {vps.specs?.cpuCores} vCPU • {vps.specs?.ramGB}GB RAM • {vps.specs?.diskGB}GB {vps.specs?.diskType}
                           </p>
                         </div>
                       </div>
-                      <Badge variant={vps.status === 'running' ? 'success' : 'secondary'}>
+                      <Badge variant={vps.status === 'RUNNING' ? 'success' : 'secondary'}>
                         {vps.status}
                       </Badge>
                     </div>

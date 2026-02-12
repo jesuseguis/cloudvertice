@@ -211,7 +211,7 @@ export function useVpsRescueMode(id: string) {
   const { success, error: toastError } = useToast()
 
   const enableMutation = useMutation({
-    mutationFn: () => vpsApi.enableRescueMode(id),
+    mutationFn: () => vpsApi.rescueMode(id, true),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vps', id] })
       success('Modo rescate activado')
@@ -222,7 +222,7 @@ export function useVpsRescueMode(id: string) {
   })
 
   const disableMutation = useMutation({
-    mutationFn: () => vpsApi.disableRescueMode(id),
+    mutationFn: () => vpsApi.rescueMode(id, false),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vps', id] })
       success('Modo rescate desactivado')

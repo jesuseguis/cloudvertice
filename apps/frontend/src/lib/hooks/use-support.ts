@@ -47,7 +47,7 @@ export function useClientTicket(id: string): {
   })
 
   const replyMutation = useMutation({
-    mutationFn: (message: string) => supportApi.reply(id, message),
+    mutationFn: (message: string) => supportApi.addMessage(id, message),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['client', 'tickets'] })
       queryClient.invalidateQueries({ queryKey: ['client', 'tickets', id] })

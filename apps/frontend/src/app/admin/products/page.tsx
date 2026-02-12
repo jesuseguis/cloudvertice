@@ -182,7 +182,7 @@ export default function AdminProductsPage() {
               </TableHeader>
               <TableBody>
                 {products.map((product) => {
-                  const status: ProductStatus = product.isActive ? 'active' : 'inactive'
+                  const status: ProductStatus = (product.isActive ? 'active' : 'inactive') as ProductStatus
                   return (
                     <TableRow key={product.id}>
                       <TableCell>

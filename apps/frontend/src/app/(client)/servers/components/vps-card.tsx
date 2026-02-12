@@ -64,7 +64,7 @@ export function VpsCard({ vps }: VpsCardProps) {
     }
   }
 
-  const status = (vps.status?.toLowerCase() || 'pending') as VPSStatus
+  const status = (vps.status || 'PENDING') as VPSStatus
   // Only show action buttons if VPS is provisioned (has contaboInstanceId)
   const isProvisioned = !!vps.contaboInstanceId
 
@@ -140,7 +140,7 @@ export function VpsCard({ vps }: VpsCardProps) {
               El VPS está siendo provisionado. Los controles estarán disponibles pronto.
             </p>
           </div>
-        ) : status === 'running' ? (
+        ) : status === 'RUNNING' ? (
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -163,7 +163,7 @@ export function VpsCard({ vps }: VpsCardProps) {
               Detener
             </Button>
           </div>
-        ) : status === 'stopped' ? (
+        ) : status === 'STOPPED' ? (
           <Button
             variant="outline"
             size="sm"

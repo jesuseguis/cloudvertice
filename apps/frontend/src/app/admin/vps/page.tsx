@@ -103,7 +103,7 @@ export default function AdminAllVpsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
 
   const filteredInstances = instances.filter((instance: ContaboInstance) => {
-    return statusFilter === 'all' || instance.status.toLowerCase() === statusFilter.toLowerCase()
+    return statusFilter === 'all' || (instance.status ?? '').toLowerCase() === statusFilter.toLowerCase()
   })
 
   // Helper functions to safely get specs - updated for actual Contabo API structure
@@ -253,7 +253,7 @@ export default function AdminAllVpsPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${getStatusColor(instance.status)}`} />
+                        <div className={`w-2 h-2 rounded-full ${getStatusColor(instance.status ?? '')}`} />
                         <span className="text-sm capitalize">{instance.status}</span>
                       </div>
                     </TableCell>

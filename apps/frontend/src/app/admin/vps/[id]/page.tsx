@@ -15,7 +15,7 @@ import {
   Calendar,
   MapPin,
   HardDrive,
-  Processor,
+  Cpu,
   MemoryStick,
   Globe,
   User,
@@ -173,7 +173,7 @@ export default function AdminVpsDetailPage() {
           {specs && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
               <div className="flex items-center gap-3 p-3 bg-background-dark rounded-lg">
-                <Processor className="h-5 w-5 text-text-secondary" />
+                <Cpu className="h-5 w-5 text-text-secondary" />
                 <div>
                   <p className="text-xs text-text-secondary">CPU</p>
                   <p className="text-sm font-medium text-white">{specs.cpu} vCPU</p>
@@ -277,7 +277,7 @@ export default function AdminVpsDetailPage() {
               </Button>
             ) : (
               <Button
-                variant="destructive"
+                variant="danger"
                 onClick={() => suspendMutation.mutate()}
                 disabled={suspendMutation.isPending}
               >

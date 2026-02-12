@@ -17,6 +17,13 @@ export interface SupportTicket {
   createdAt: string
   updatedAt: string
   resolvedAt?: string
+  user?: {
+    id: string
+    email: string
+    firstName?: string
+    lastName?: string
+    role?: string
+  }
 }
 
 export interface TicketMessage {

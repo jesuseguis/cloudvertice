@@ -163,7 +163,7 @@ export default function OrderDetailPage() {
                       <p className="text-xs text-text-secondary">{formatDate(order.createdAt)}</p>
                     </div>
                   </div>
-                  {order.status !== 'PENDING' && order.status !== 'pending' && (
+                  {order.status !== 'PENDING' && (
                     <div className="flex gap-3">
                       <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2" />
                       <div className="flex-1">
@@ -171,7 +171,7 @@ export default function OrderDetailPage() {
                       </div>
                     </div>
                   )}
-                  {(order.status === 'PROVISIONING' || order.status === 'provisioning' || order.status === 'COMPLETED' || order.status === 'completed') && (
+                  {(order.status === 'PROVISIONING' || order.status === 'COMPLETED') && (
                     <div className="flex gap-3">
                       <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2" />
                       <div className="flex-1">
@@ -182,7 +182,7 @@ export default function OrderDetailPage() {
                       </div>
                     </div>
                   )}
-                  {(order.status === 'COMPLETED' || order.status === 'completed') && (
+                  {order.status === 'COMPLETED' && (
                     <div className="flex gap-3">
                       <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2" />
                       <div className="flex-1">
@@ -238,7 +238,7 @@ export default function OrderDetailPage() {
                     <Button
                       variant="link"
                       className="p-0 h-auto text-primary"
-                      onClick={() => router.push(`/servers/${order.vpsInstance.id}`)}
+                      onClick={() => router.push(`/servers/${order.vpsInstance?.id}`)}
                     >
                       Ver servidor
                     </Button>
@@ -250,15 +250,15 @@ export default function OrderDetailPage() {
             {/* Actions */}
             <Card>
               <CardContent className="pt-6 space-y-3">
-                {(order.status === 'PAID' || order.status === 'paid') && (
+                {order.status === 'PAID' && (
                   <p className="text-sm text-text-secondary text-center">
                     Tu orden está siendo procesada
                   </p>
                 )}
-                {(order.status === 'COMPLETED' || order.status === 'completed') && order.vpsInstance && (
+                {order.status === 'COMPLETED' && order.vpsInstance && (
                   <Button
                     className="w-full"
-                    onClick={() => router.push(`/servers/${order.vpsInstance.id}`)}
+                    onClick={() => router.push(`/servers/${order.vpsInstance?.id}`)}
                   >
                     <Server className="mr-2 h-4 w-4" />
                     Ver mi VPS

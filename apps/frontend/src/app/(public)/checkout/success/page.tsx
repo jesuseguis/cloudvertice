@@ -45,7 +45,7 @@ function SuccessContent() {
       if (orderId) {
         try {
           const order = await ordersApi.byId(orderId)
-          setOrderDetails(order)
+          setOrderDetails(order as unknown as OrderDetails)
         } catch (error) {
           console.error('Failed to fetch order details:', error)
         }

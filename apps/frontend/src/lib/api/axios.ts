@@ -174,10 +174,12 @@ apiClient.interceptors.response.use(
     }
 
     // Handle other errors
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data = error.response?.data as any
     const apiError: ApiError = {
-      message: error.response?.data?.error?.message || error.response?.data?.message || error.message || 'An error occurred',
-      code: error.response?.data?.error?.code || error.response?.data?.error || error.code,
-      details: error.response?.data?.error?.details || error.response?.data,
+      message: data?.error?.message || data?.message || error.message || 'An error occurred',
+      code: data?.error?.code || data?.error || error.code,
+      details: data?.error?.details || data,
     }
 
     return Promise.reject(apiError)

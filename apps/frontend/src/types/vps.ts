@@ -18,6 +18,10 @@ export interface VPSInstance {
   ipAddress: string | null
   region: string
   rootPasswordEncrypted: string | null
+  rootPassword?: string | null
+  nextBillingDate?: string | null
+  imageName?: string | null
+  description?: string | null
   expiresAt: string | null
   createdAt: string
   updatedAt: string

@@ -109,7 +109,7 @@ export default function VpsDetailPage() {
       <div className="p-6 lg:p-8 space-y-6">
         {/* Quick Actions */}
         <div className="flex gap-3">
-          {vps.status === 'running' ? (
+          {vps.status === 'RUNNING' ? (
             <>
               <Button
                 variant="outline"
@@ -136,7 +136,7 @@ export default function VpsDetailPage() {
                 Forzar apagado
               </Button>
             </>
-          ) : vps.status === 'stopped' ? (
+          ) : vps.status === 'STOPPED' ? (
             <Button onClick={() => handleAction('start')} className="flex-1 sm:flex-none">
               <Power className="mr-2 h-4 w-4" />
               Iniciar servidor
@@ -173,18 +173,18 @@ export default function VpsDetailPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="bg-background-dark rounded-lg p-4">
                     <Cpu className="h-5 w-5 text-text-secondary mb-2" />
-                    <p className="text-2xl font-bold text-white">{vps.specs.cpuCores}</p>
+                    <p className="text-2xl font-bold text-white">{vps.specs?.cpuCores}</p>
                     <p className="text-xs text-text-secondary">vCPUs</p>
                   </div>
                   <div className="bg-background-dark rounded-lg p-4">
                     <MemoryStick className="h-5 w-5 text-text-secondary mb-2" />
-                    <p className="text-2xl font-bold text-white">{vps.specs.ramGB}GB</p>
+                    <p className="text-2xl font-bold text-white">{vps.specs?.ramGB}GB</p>
                     <p className="text-xs text-text-secondary">Memoria RAM</p>
                   </div>
                   <div className="bg-background-dark rounded-lg p-4">
                     <HardDrive className="h-5 w-5 text-text-secondary mb-2" />
-                    <p className="text-2xl font-bold text-white">{vps.specs.diskGB}GB</p>
-                    <p className="text-xs text-text-secondary">{vps.specs.diskType}</p>
+                    <p className="text-2xl font-bold text-white">{vps.specs?.diskGB}GB</p>
+                    <p className="text-xs text-text-secondary">{vps.specs?.diskType}</p>
                   </div>
                   <div className="bg-background-dark rounded-lg p-4">
                     <Globe className="h-5 w-5 text-text-secondary mb-2" />
@@ -265,7 +265,7 @@ export default function VpsDetailPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-text-secondary">Imagen</span>
-                  <span className="text-white">{vps.imageName}</span>
+                  <span className="text-white">{vps.image?.name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-text-secondary">Fecha de creación</span>
