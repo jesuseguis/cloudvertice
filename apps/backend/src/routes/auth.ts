@@ -6,6 +6,7 @@ import {
   registerSchema,
   loginSchema,
   refreshTokenSchema,
+  changePasswordSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
 } from '../utils/validators'
@@ -65,6 +66,18 @@ router.get(
   '/me',
   authenticate,
   authController.getMe
+)
+
+/**
+ * @route   POST /api/auth/change-password
+ * @desc    Change password (authenticated)
+ * @access  Private
+ */
+router.post(
+  '/change-password',
+  authenticate,
+  validate(changePasswordSchema),
+  authController.changePassword
 )
 
 /**

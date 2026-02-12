@@ -106,6 +106,28 @@ export async function logout(_req: Request, res: Response) {
 }
 
 /**
+ * Change password (authenticated user)
+ */
+export async function changePassword(req: Request, res: Response, next: NextFunction) {
+  try {
+    if (!req.user) {
+      throw UnauthorizedError('Not authenticated')
+    }
+
+    const { currentPassword, newPassword } = req.body
+
+    await authService.changePassword(req.user.userId, currentPassword, newPassword)
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully',
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
  * Request password reset
  */
 export async function forgotPassword(req: Request, res: Response, next: NextFunction) {
