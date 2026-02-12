@@ -1,0 +1,82 @@
+# ============================================================
+# Dockerfile.backend — Cloud Vertice Backend (Express + Prisma)
+# Build context: monorepo root
+# ============================================================
+
+# ────────────────────────────────────────────────────────────
+# Stage 1: Base con herramientas de compilación nativas
+# ────────────────────────────────────────────────────────────
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat openssl python3 make g++
+WORKDIR /app
+
+# ────────────────────────────────────────────────────────────
+# Stage 2: Instalar dependencias del workspace
+# ────────────────────────────────────────────────────────────
+FROM base AS deps
+WORKDIR /app
+
+# Copiar manifiestos del workspace (monorepo)
+COPY package.json package-lock.json ./
+COPY packages/shared/package.json ./packages/shared/package.json
+COPY apps/backend/package.json     ./apps/backend/package.json
+
+# Instalar todas las dependencias (npm workspaces)
+RUN npm ci
+
+# ────────────────────────────────────────────────────────────
+# Stage 3: Compilar shared + backend
+# ────────────────────────────────────────────────────────────
+FROM base AS builder
+WORKDIR /app
+
+# Copiar node_modules instalados
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copiar fuentes necesarias para el build
+COPY tsconfig.json            ./
+COPY packages/shared          ./packages/shared
+COPY apps/backend             ./apps/backend
+
+# 1. Compilar el paquete compartido
+WORKDIR /app/packages/shared
+RUN npm run build
+
+# 2. Generar cliente Prisma y compilar backend TypeScript
+WORKDIR /app/apps/backend
+RUN npx prisma generate
+RUN npm run build
+
+# 3. Resolver el symlink de workspace → directorio real
+#    (Docker COPY no preserva symlinks relativos entre stages)
+WORKDIR /app
+RUN rm -rf ./node_modules/@cloudvertice/shared \
+    && cp -r ./packages/shared ./node_modules/@cloudvertice/shared
+
+# ────────────────────────────────────────────────────────────
+# Stage 4: Imagen de producción (mínima)
+# ────────────────────────────────────────────────────────────
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+RUN apk add --no-cache libc6-compat openssl \
+    && addgroup -g 1001 -S nodejs \
+    && adduser  -u 1001 -S nodejs -G nodejs
+
+# Dependencias de producción (con @cloudvertice/shared resuelto)
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
+
+# Código compilado
+COPY --from=builder --chown=nodejs:nodejs /app/apps/backend/dist    ./dist
+COPY --from=builder --chown=nodejs:nodejs /app/apps/backend/prisma  ./prisma
+COPY --from=builder --chown=nodejs:nodejs /app/apps/backend/package.json ./package.json
+
+USER nodejs
+
+EXPOSE 4000
+
+ENV NODE_ENV=production \
+    PORT=4000
+
+# Ejecutar migraciones y arrancar el servidor
+CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && node dist/index.js"]

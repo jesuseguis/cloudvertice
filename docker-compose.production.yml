@@ -1,0 +1,172 @@
+# ============================================================
+# docker-compose.production.yml — Cloud Vertice
+# Despliegue en producción con Dokploy
+#
+# Uso:
+#   docker compose -f docker-compose.production.yml up -d
+#
+# Variables de entorno:
+#   Crea un archivo .env en la raíz del proyecto (ver .env.example)
+#   o configúralas desde el panel de Dokploy.
+#
+# Dominios (Traefik / Dokploy):
+#   Ajusta las labels traefik.http.routers.*.rule con tu dominio.
+# ============================================================
+
+name: cloudvertice
+
+networks:
+  # Red interna entre servicios (sin exposición externa)
+  internal:
+    driver: bridge
+  # Red de Traefik gestionada por Dokploy (proxy inverso)
+  dokploy-network:
+    external: true
+
+volumes:
+  postgres_data:
+  redis_data:
+
+services:
+
+  # ──────────────────────────────────────────────────────────
+  # PostgreSQL 16
+  # ──────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: cloudvertice-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD requerido}
+      POSTGRES_DB:       ${POSTGRES_DB:-cloudvertice}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ──────────────────────────────────────────────────────────
+  # Redis 7
+  # ──────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: cloudvertice-redis
+    restart: unless-stopped
+    # $$VAR escapes para que los evalúe el shell del contenedor, no Compose.
+    # Si REDIS_PASSWORD está vacío, arranca sin contraseña.
+    command: sh -c 'redis-server $${REDIS_PASSWORD:+--requirepass $$REDIS_PASSWORD}'
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ──────────────────────────────────────────────────────────
+  # Backend (Express.js + Prisma)
+  # ──────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: cloudvertice-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV:               production
+      PORT:                   4000
+      DATABASE_URL:           postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-cloudvertice}?schema=public
+      REDIS_URL:              ${REDIS_URL:-redis://redis:6379}
+      JWT_SECRET:             ${JWT_SECRET:?JWT_SECRET requerido}
+      JWT_EXPIRES_IN:         ${JWT_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+      CONTABO_CLIENT_ID:      ${CONTABO_CLIENT_ID:?CONTABO_CLIENT_ID requerido}
+      CONTABO_CLIENT_SECRET:  ${CONTABO_CLIENT_SECRET:?CONTABO_CLIENT_SECRET requerido}
+      CONTABO_API_USER:       ${CONTABO_API_USER:?CONTABO_API_USER requerido}
+      CONTABO_API_PASSWORD:   ${CONTABO_API_PASSWORD:?CONTABO_API_PASSWORD requerido}
+      CONTABO_API_BASE_URL:   ${CONTABO_API_BASE_URL:-https://api.contabo.com}
+      ENCRYPTION_KEY:         ${ENCRYPTION_KEY:?ENCRYPTION_KEY requerido}
+      STRIPE_SECRET_KEY:      ${STRIPE_SECRET_KEY:?STRIPE_SECRET_KEY requerido}
+      STRIPE_WEBHOOK_SECRET:  ${STRIPE_WEBHOOK_SECRET:?STRIPE_WEBHOOK_SECRET requerido}
+      SENDGRID_API_KEY:       ${SENDGRID_API_KEY:-}
+      EMAIL_FROM:             ${EMAIL_FROM:-noreply@cloudvertice.com}
+      EMAIL_FROM_NAME:        ${EMAIL_FROM_NAME:-Cloud Vertice}
+      APP_URL:                ${APP_URL:-https://cloudvertice.com}
+      ANNUAL_DISCOUNT_PERCENT: ${ANNUAL_DISCOUNT_PERCENT:-17}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - internal
+      - dokploy-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:4000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cv-backend.rule=Host(`api.${DOMAIN:-cloudvertice.com}`)"
+      - "traefik.http.routers.cv-backend.entrypoints=websecure"
+      - "traefik.http.routers.cv-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.cv-backend.loadbalancer.server.port=4000"
+
+  # ──────────────────────────────────────────────────────────
+  # Frontend (Next.js 14 — standalone)
+  # ──────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.cloudvertice.com}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://cloudvertice.com}
+    container_name: cloudvertice-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV:              production
+      PORT:                  3000
+      HOSTNAME:              0.0.0.0
+      NEXT_PUBLIC_API_URL:   ${NEXT_PUBLIC_API_URL:-https://api.cloudvertice.com}
+      NEXT_PUBLIC_APP_URL:   ${NEXT_PUBLIC_APP_URL:-https://cloudvertice.com}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - internal
+      - dokploy-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cv-frontend.rule=Host(`${DOMAIN:-cloudvertice.com}`)"
+      - "traefik.http.routers.cv-frontend.entrypoints=websecure"
+      - "traefik.http.routers.cv-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.cv-frontend.loadbalancer.server.port=3000"
+      # Redirigir www → apex
+      - "traefik.http.routers.cv-frontend-www.rule=Host(`www.${DOMAIN:-cloudvertice.com}`)"
+      - "traefik.http.routers.cv-frontend-www.entrypoints=websecure"
+      - "traefik.http.routers.cv-frontend-www.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.cv-www-redirect.redirectregex.regex=^https://www\\.(.*)"
+      - "traefik.http.middlewares.cv-www-redirect.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.cv-www-redirect.redirectregex.permanent=true"
+      - "traefik.http.routers.cv-frontend-www.middlewares=cv-www-redirect"

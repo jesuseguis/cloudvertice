@@ -1,0 +1,94 @@
+# ============================================================
+# Dockerfile.frontend — Cloud Vertice Frontend (Next.js 14)
+# Build context: monorepo root
+# Usa output: 'standalone' (next.config.js)
+# ============================================================
+
+# ────────────────────────────────────────────────────────────
+# Stage 1: Base
+# ────────────────────────────────────────────────────────────
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# ────────────────────────────────────────────────────────────
+# Stage 2: Instalar dependencias del workspace
+# ────────────────────────────────────────────────────────────
+FROM base AS deps
+WORKDIR /app
+
+COPY package.json package-lock.json         ./
+COPY packages/shared/package.json           ./packages/shared/package.json
+COPY apps/frontend/package.json             ./apps/frontend/package.json
+
+RUN npm ci
+
+# ────────────────────────────────────────────────────────────
+# Stage 3: Build
+# ────────────────────────────────────────────────────────────
+FROM base AS builder
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+
+COPY tsconfig.json       ./
+COPY packages/shared     ./packages/shared
+COPY apps/frontend       ./apps/frontend
+
+# Compilar el paquete compartido
+WORKDIR /app/packages/shared
+RUN npm run build
+
+# Variables públicas necesarias en tiempo de BUILD (Next.js las
+# incrusta en el bundle; deben pasarse como build-args)
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+
+# Compilar Next.js → genera .next/standalone
+WORKDIR /app/apps/frontend
+RUN npm run build
+
+# ────────────────────────────────────────────────────────────
+# Stage 4: Instalar SOLO dependencias de producción
+# ────────────────────────────────────────────────────────────
+FROM base AS prod-deps
+WORKDIR /app
+
+COPY package.json package-lock.json         ./
+COPY packages/shared/package.json           ./packages/shared/package.json
+COPY apps/frontend/package.json             ./apps/frontend/package.json
+
+# Solo dependencias de producción (sin devDeps)
+RUN npm ci --omit=dev
+
+# ────────────────────────────────────────────────────────────
+# Stage 5: Imagen de producción
+# ────────────────────────────────────────────────────────────
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+RUN addgroup -g 1001 -S nodejs \
+    && adduser  -u 1001 -S nodejs -G nodejs
+
+ENV NODE_ENV=production \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0
+
+# node_modules de producción (permite resolver 'next' y otras deps)
+COPY --from=prod-deps --chown=nodejs:nodejs /app/node_modules ./node_modules
+COPY --from=prod-deps --chown=nodejs:nodejs /app/package.json ./package.json
+
+# .next/standalone contiene server.js + .next/server/ (SSR chunks)
+COPY --from=builder --chown=nodejs:nodejs /app/apps/frontend/.next/standalone/server.js         ./server.js
+COPY --from=builder --chown=nodejs:nodejs /app/apps/frontend/.next/standalone/.next             ./.next
+
+# Static assets del cliente (CSS/JS/imágenes)
+COPY --from=builder --chown=nodejs:nodejs /app/apps/frontend/.next/static                       ./.next/static
+
+USER nodejs
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]
