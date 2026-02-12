@@ -12,12 +12,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { ChevronsUpDown, LogOut, Settings, User } from 'lucide-react'
+import { ChevronsUpDown, LogOut, User } from 'lucide-react'
 import { useAuth } from '@/lib/hooks'
 
 export function UserMenu() {
   const router = useRouter()
-  const { user, logout } = useAuth()
+  const { user, logout, isAdmin } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
 
   const handleLogout = async () => {
@@ -25,6 +25,8 @@ export function UserMenu() {
     await logout()
     router.push('/login')
   }
+
+  const profilePath = isAdmin ? '/admin/profile' : '/profile'
 
   const getInitials = () => {
     if (!user?.name) return 'U'
@@ -63,13 +65,9 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push('/profile')}>
+        <DropdownMenuItem onClick={() => router.push(profilePath)}>
           <User className="mr-2 h-4 w-4" />
           <span>Perfil</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push('/settings')}>
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Configuración</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
