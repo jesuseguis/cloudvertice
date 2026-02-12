@@ -116,6 +116,18 @@ export function useAdminOrder(id: string) {
     },
   })
 
+  const generateInvoiceMutation = useMutation({
+    mutationFn: () => adminApi.invoices.create({ orderId: id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'orders', id] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'invoices'] })
+      success('Factura generada correctamente')
+    },
+    onError: (err) => {
+      toastError(getErrorMessage(err) || 'Error al generar factura', 'Error')
+    },
+  })
+
   return {
     order: query.data,
     isLoading: query.isLoading,
@@ -125,6 +137,8 @@ export function useAdminOrder(id: string) {
     isAssigning: assignMutation.isPending,
     provisionVps: provisionMutation.mutate,
     isProvisioning: provisionMutation.isPending,
+    generateInvoice: generateInvoiceMutation.mutate,
+    isGeneratingInvoice: generateInvoiceMutation.isPending,
   }
 }
 

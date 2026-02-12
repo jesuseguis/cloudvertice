@@ -37,6 +37,7 @@ import {
   MemoryStick,
   HardDrive,
   Globe,
+  FileText,
 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -63,7 +64,7 @@ export default function AdminOrderDetailPage() {
   const params = useParams()
   const router = useRouter()
   const orderId = params.id as string
-  const { order, isLoading, updateStatus, isUpdating, provisionVps, isProvisioning } = useAdminOrder(orderId)
+  const { order, isLoading, updateStatus, isUpdating, provisionVps, isProvisioning, generateInvoice, isGeneratingInvoice } = useAdminOrder(orderId)
   const { instances: availableInstances, isLoading: isLoadingInstances } = useAdminContaboAvailable()
   const [provisionDialogOpen, setProvisionDialogOpen] = useState(false)
   const [selectedInstanceId, setSelectedInstanceId] = useState<string | null>(null)
@@ -460,6 +461,53 @@ export default function AdminOrderDetailPage() {
                   <span className="text-white">Total</span>
                   <span className="text-white text-lg">{formatCurrency(order.totalAmount)}</span>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Invoice */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Factura
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {order.invoice ? (
+                  <>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-text-secondary">Número</span>
+                      <span className="text-white font-mono">{order.invoice.invoiceNumber}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-text-secondary">Monto</span>
+                      <span className="text-white">{formatCurrency(Number(order.invoice.total))}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-text-secondary">Estado</span>
+                      <StatusBadge status={order.invoice.status} />
+                    </div>
+                  </>
+                ) : ['PAID', 'PROCESSING', 'PROVISIONING', 'COMPLETED'].includes(order.status) ? (
+                  <>
+                    <p className="text-sm text-text-secondary">
+                      No se ha generado factura para esta orden.
+                    </p>
+                    <Button
+                      className="w-full"
+                      variant="outline"
+                      onClick={() => generateInvoice()}
+                      disabled={isGeneratingInvoice}
+                    >
+                      <FileText className="mr-2 h-4 w-4" />
+                      {isGeneratingInvoice ? 'Generando...' : 'Generar Factura'}
+                    </Button>
+                  </>
+                ) : (
+                  <p className="text-sm text-text-secondary">
+                    La factura se puede generar una vez la orden esté pagada.
+                  </p>
+                )}
               </CardContent>
             </Card>
 

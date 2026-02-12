@@ -248,6 +248,7 @@ export class OrderService {
       include: {
         product: true,
         vpsInstance: true,
+        invoice: true,
         user: {
           select: {
             id: true,
@@ -543,7 +544,7 @@ export class OrderService {
           ipAddress: vps.ipAddress || 'N/A',
           rootPassword,
           region: vps.region,
-          dashboardUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/servers`,
+          dashboardUrl: `${process.env.APP_URL || 'http://localhost:3000'}/servers`,
         })
         console.log(`[OrderService] VPS provisioned email sent to: ${updated.user.email}`)
       } catch (error) {
@@ -685,6 +686,7 @@ export class OrderService {
       ...(order.product && { product: this.convertBigInts(order.product) }),
       ...(order.vpsInstance && { vpsInstance: this.convertBigInts(order.vpsInstance) }),
       ...(order.user && { user: this.convertBigInts(order.user) }),
+      ...(order.invoice && { invoice: this.convertBigInts(order.invoice) }),
     }
   }
 }

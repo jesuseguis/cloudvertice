@@ -209,7 +209,7 @@ export class VpsService {
               ipAddress: data.ipAddress,
               rootPassword: data.rootPassword,
               region: data.region || order.region,
-              dashboardUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/servers`,
+              dashboardUrl: `${process.env.APP_URL || 'http://localhost:3000'}/servers`,
             })
             console.log('[VPS SERVICE] VPS provisioned email sent to:', user.email)
           } catch (error) {
@@ -280,7 +280,7 @@ export class VpsService {
           ipAddress: data.ipAddress,
           rootPassword: data.rootPassword,
           region: data.region || order.region,
-          dashboardUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/servers`,
+          dashboardUrl: `${process.env.APP_URL || 'http://localhost:3000'}/servers`,
         })
         console.log('[VPS SERVICE] VPS provisioned email sent to:', user.email)
       } catch (error) {
