@@ -99,7 +99,8 @@ services:
       ENCRYPTION_KEY:         ${ENCRYPTION_KEY:?ENCRYPTION_KEY requerido}
       STRIPE_SECRET_KEY:      ${STRIPE_SECRET_KEY:?STRIPE_SECRET_KEY requerido}
       STRIPE_WEBHOOK_SECRET:  ${STRIPE_WEBHOOK_SECRET:?STRIPE_WEBHOOK_SECRET requerido}
-      SENDGRID_API_KEY:       ${SENDGRID_API_KEY:-}
+      BREVO_API_KEY:          ${BREVO_API_KEY:-}
+      BREVO_SMTP_USER:        ${BREVO_SMTP_USER:-}
       EMAIL_FROM:             ${EMAIL_FROM:-noreply@cloud.vertice.com}
       EMAIL_FROM_NAME:        ${EMAIL_FROM_NAME:-Cloud Vertice}
       APP_URL:                ${APP_URL:-https://cloud.vertice.com}

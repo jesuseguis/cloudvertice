@@ -45,7 +45,7 @@ See `PDA_Plataforma_Reventa_VPS_Contabo.md` for complete specification.
 ### Key Integrations
 - **Contabo API:** OAuth2 authentication, endpoint proxying for VPS actions
 - **Payments:** Stripe (or MercadoLibre for Latin America)
-- **Email:** SendGrid / AWS SES
+- **Email:** Brevo (SMTP)
 
 ### Core Data Models
 - `users` - Customer and admin accounts
@@ -143,6 +143,7 @@ ENCRYPTION_KEY=your-32-byte-hex-key
 STRIPE_SECRET_KEY=sk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 
-# Email
-SENDGRID_API_KEY=SG...
+# Email (Brevo)
+BREVO_API_KEY=your-brevo-api-key
+BREVO_SMTP_USER=your-brevo-smtp-login-email
 ```

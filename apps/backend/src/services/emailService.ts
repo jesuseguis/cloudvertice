@@ -68,17 +68,18 @@ class EmailService {
    * Initialize email transporter
    */
   private initializeTransporter() {
-    const sendgridApiKey = process.env.SENDGRID_API_KEY
+    const brevoApiKey = process.env.BREVO_API_KEY
+    const brevoSmtpUser = process.env.BREVO_SMTP_USER
 
-    if (sendgridApiKey) {
-      // Use SendGrid
+    if (brevoApiKey && brevoSmtpUser) {
+      // Use Brevo (ex-Sendinblue)
       this.transporter = nodemailer.createTransport({
-        host: 'smtp.sendgrid.net',
+        host: 'smtp-relay.brevo.com',
         port: 587,
         secure: false,
         auth: {
-          user: 'apikey',
-          pass: sendgridApiKey,
+          user: brevoSmtpUser,
+          pass: brevoApiKey,
         },
       })
     } else if (process.env.SMTP_HOST) {
