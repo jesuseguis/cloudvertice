@@ -43,6 +43,7 @@ export interface Order {
     ipAddress?: string
     status: string
   }
+  invoice?: Invoice
 }
 
 export interface OrderItem {
