@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useParams } from 'next/navigation'
 import { useClientOrder } from '@/lib/hooks/use-orders'
+import { invoicesApi } from '@/lib/api/client'
 import { Header } from '@/components/layout/header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { StatusBadge } from '@/components/ui/badge'
@@ -264,10 +265,16 @@ export default function OrderDetailPage() {
                     Ver mi VPS
                   </Button>
                 )}
-                <Button variant="outline" className="w-full">
-                  <Download className="mr-2 h-4 w-4" />
-                  Descargar factura
-                </Button>
+                {order.invoice && (
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => invoicesApi.downloadPdf(order.invoice!.id, order.invoice!.invoiceNumber)}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Descargar factura
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </div>

@@ -130,6 +130,7 @@ export const API_ENDPOINTS = {
       statistics: `${API_BASE}/invoices/admin/statistics`,
       overdue: `${API_BASE}/invoices/admin/overdue`,
       create: `${API_BASE}/invoices/admin`,
+      delete: (id: string) => `${API_BASE}/invoices/admin/${id}`,
       updateStatus: (id: string) => `${API_BASE}/invoices/admin/${id}/status`,
     },
     alerts: `${API_BASE}/admin/alerts`,

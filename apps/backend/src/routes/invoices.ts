@@ -103,6 +103,18 @@ router.post(
 )
 
 /**
+ * @route   DELETE /api/admin/invoices/:id
+ * @desc    Delete invoice
+ * @access  Admin
+ */
+router.delete(
+  '/admin/:id',
+  authenticate,
+  requireAdmin,
+  invoiceController.deleteInvoice
+)
+
+/**
  * @route   PUT /api/admin/invoices/:id/status
  * @desc    Update invoice status
  * @access  Admin

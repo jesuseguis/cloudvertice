@@ -205,6 +205,23 @@ export class InvoiceService {
   }
 
   /**
+   * Delete an invoice (admin only)
+   */
+  async deleteInvoice(id: string): Promise<void> {
+    const invoice = await prisma.invoice.findUnique({
+      where: { id },
+    })
+
+    if (!invoice) {
+      throw NotFoundError('Invoice not found')
+    }
+
+    await prisma.invoice.delete({
+      where: { id },
+    })
+  }
+
+  /**
    * Pay an invoice
    */
   async payInvoice(id: string, userId: string): Promise<InvoiceInfo> {

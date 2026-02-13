@@ -128,6 +128,21 @@ export function useAdminOrder(id: string) {
     },
   })
 
+  const regenerateInvoiceMutation = useMutation({
+    mutationFn: async (invoiceId: string) => {
+      await adminApi.invoices.delete(invoiceId)
+      return adminApi.invoices.create({ orderId: id })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'orders', id] })
+      queryClient.invalidateQueries({ queryKey: ['admin', 'invoices'] })
+      success('Factura regenerada correctamente')
+    },
+    onError: (err) => {
+      toastError(getErrorMessage(err) || 'Error al regenerar factura', 'Error')
+    },
+  })
+
   return {
     order: query.data,
     isLoading: query.isLoading,
@@ -139,6 +154,8 @@ export function useAdminOrder(id: string) {
     isProvisioning: provisionMutation.isPending,
     generateInvoice: generateInvoiceMutation.mutate,
     isGeneratingInvoice: generateInvoiceMutation.isPending,
+    regenerateInvoice: regenerateInvoiceMutation.mutate,
+    isRegeneratingInvoice: regenerateInvoiceMutation.isPending,
   }
 }
 

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useAdminOrder, useAdminContaboAvailable } from '@/lib/hooks/use-admin'
+import { invoicesApi } from '@/lib/api/client'
 import { Header } from '@/components/layout/header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { StatusBadge } from '@/components/ui/badge'
@@ -38,6 +39,8 @@ import {
   HardDrive,
   Globe,
   FileText,
+  RefreshCw,
+  Download,
 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -64,7 +67,7 @@ export default function AdminOrderDetailPage() {
   const params = useParams()
   const router = useRouter()
   const orderId = params.id as string
-  const { order, isLoading, updateStatus, isUpdating, provisionVps, isProvisioning, generateInvoice, isGeneratingInvoice } = useAdminOrder(orderId)
+  const { order, isLoading, updateStatus, isUpdating, provisionVps, isProvisioning, generateInvoice, isGeneratingInvoice, regenerateInvoice, isRegeneratingInvoice } = useAdminOrder(orderId)
   const { instances: availableInstances, isLoading: isLoadingInstances } = useAdminContaboAvailable()
   const [provisionDialogOpen, setProvisionDialogOpen] = useState(false)
   const [selectedInstanceId, setSelectedInstanceId] = useState<string | null>(null)
@@ -486,6 +489,27 @@ export default function AdminOrderDetailPage() {
                     <div className="flex justify-between text-sm">
                       <span className="text-text-secondary">Estado</span>
                       <StatusBadge status={order.invoice.status} />
+                    </div>
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        className="flex-1"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => invoicesApi.downloadPdf(order.invoice!.id, order.invoice!.invoiceNumber)}
+                      >
+                        <Download className="mr-1 h-3 w-3" />
+                        Descargar
+                      </Button>
+                      <Button
+                        className="flex-1"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => regenerateInvoice(order.invoice!.id)}
+                        disabled={isRegeneratingInvoice}
+                      >
+                        <RefreshCw className={`mr-1 h-3 w-3 ${isRegeneratingInvoice ? 'animate-spin' : ''}`} />
+                        {isRegeneratingInvoice ? 'Regenerando...' : 'Regenerar'}
+                      </Button>
                     </div>
                   </>
                 ) : ['PAID', 'PROCESSING', 'PROVISIONING', 'COMPLETED'].includes(order.status) ? (

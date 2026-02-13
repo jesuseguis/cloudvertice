@@ -92,6 +92,24 @@ export async function createInvoice(req: Request, res: Response, next: NextFunct
 }
 
 /**
+ * Delete invoice (admin only)
+ */
+export async function deleteInvoice(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params
+
+    await invoiceService.deleteInvoice(id)
+
+    res.json({
+      success: true,
+      message: 'Invoice deleted successfully',
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
  * Update invoice status (admin only)
  */
 export async function updateInvoiceStatus(req: Request, res: Response, next: NextFunction) {

@@ -203,8 +203,19 @@ export const invoicesApi = {
   byId: (id: string) =>
     request<Invoice>('get', API_ENDPOINTS.client.invoices.byId(id)),
 
-  downloadPdf: (id: string) => {
-    window.open(API_ENDPOINTS.client.invoices.downloadPdf(id), '_blank')
+  downloadPdf: async (id: string, invoiceNumber?: string) => {
+    const response = await apiClient.get(API_ENDPOINTS.client.invoices.downloadPdf(id), {
+      responseType: 'blob',
+    })
+    const blob = new Blob([response.data], { type: 'application/pdf' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `factura-${invoiceNumber || id}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
   },
 
   pay: (id: string) =>
@@ -515,6 +526,9 @@ export const adminApi = {
 
     updateStatus: (id: string, status: string) =>
       request<Invoice>('put', API_ENDPOINTS.admin.invoices.updateStatus(id), { status }),
+
+    delete: (id: string) =>
+      request<void>('delete', API_ENDPOINTS.admin.invoices.delete(id)),
   },
 
   alerts: () =>
