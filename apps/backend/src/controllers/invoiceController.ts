@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
+import PDFDocument from 'pdfkit'
 import { invoiceService } from '../services/invoiceService'
 import { NotFoundError } from '../middleware/errorHandler'
 
@@ -166,7 +167,7 @@ export async function getInvoiceStatistics(_req: Request, res: Response, next: N
 }
 
 /**
- * Download invoice as PDF (placeholder)
+ * Download invoice as PDF
  */
 export async function downloadInvoicePdf(req: Request, res: Response, next: NextFunction) {
   try {
@@ -176,15 +177,96 @@ export async function downloadInvoicePdf(req: Request, res: Response, next: Next
       return next(NotFoundError('User not found'))
     }
 
-    // Verify access
-    await invoiceService.getInvoiceById(id, req.user.userId, req.user.role === 'ADMIN')
+    const invoice = await invoiceService.getInvoiceById(id, req.user.userId, req.user.role === 'ADMIN')
 
-    // TODO: Generate PDF using a library like PDFKit
-    // For now, return a placeholder response
-    res.json({
-      success: false,
-      message: 'PDF generation not yet implemented',
-    })
+    const doc = new PDFDocument({ size: 'A4', margin: 50 })
+
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader('Content-Disposition', `attachment; filename=factura-${invoice.invoiceNumber}.pdf`)
+    doc.pipe(res)
+
+    // Header
+    doc.fontSize(24).font('Helvetica-Bold').text('Cloud Vertice', { align: 'left' })
+    doc.fontSize(10).font('Helvetica').text('cloud.vertice.com.co', { align: 'left' })
+    doc.moveDown(0.5)
+
+    // Invoice title
+    doc.fontSize(18).font('Helvetica-Bold').text('FACTURA', { align: 'right' })
+    doc.fontSize(10).font('Helvetica').text(`N° ${invoice.invoiceNumber}`, { align: 'right' })
+    doc.moveDown(1.5)
+
+    // Line
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke('#cccccc')
+    doc.moveDown(1)
+
+    // Details
+    const detailsY = doc.y
+    doc.fontSize(10).font('Helvetica-Bold').text('Fecha de emisión:', 50, detailsY)
+    doc.font('Helvetica').text(new Date(invoice.createdAt).toLocaleDateString('es-ES'), 180, detailsY)
+
+    if (invoice.dueDate) {
+      doc.font('Helvetica-Bold').text('Fecha de vencimiento:', 50, detailsY + 18)
+      doc.font('Helvetica').text(new Date(invoice.dueDate).toLocaleDateString('es-ES'), 180, detailsY + 18)
+    }
+
+    doc.font('Helvetica-Bold').text('Estado:', 50, detailsY + 36)
+    doc.font('Helvetica').text(invoice.status === 'PAID' ? 'Pagada' : invoice.status === 'PENDING' ? 'Pendiente' : 'Cancelada', 180, detailsY + 36)
+
+    if (invoice.user) {
+      doc.font('Helvetica-Bold').text('Cliente:', 350, detailsY)
+      doc.font('Helvetica').text(`${invoice.user.firstName || ''} ${invoice.user.lastName || ''}`.trim(), 350, detailsY + 18)
+      doc.font('Helvetica').text(invoice.user.email || '', 350, detailsY + 36)
+    }
+
+    doc.moveDown(4)
+
+    // Table header
+    const tableTop = doc.y
+    doc.rect(50, tableTop, 495, 25).fill('#3c83f6')
+    doc.fillColor('#ffffff').fontSize(10).font('Helvetica-Bold')
+    doc.text('Descripción', 60, tableTop + 7, { width: 250 })
+    doc.text('Cantidad', 320, tableTop + 7, { width: 60, align: 'center' })
+    doc.text('Precio', 390, tableTop + 7, { width: 80, align: 'right' })
+    doc.text('Total', 475, tableTop + 7, { width: 60, align: 'right' })
+
+    // Table row
+    const rowTop = tableTop + 30
+    doc.fillColor('#333333').font('Helvetica')
+    const productName = invoice.order?.product?.name || 'Servicio VPS'
+    doc.text(productName, 60, rowTop, { width: 250 })
+    doc.text('1', 320, rowTop, { width: 60, align: 'center' })
+    doc.text(`$${invoice.amount.toFixed(2)}`, 390, rowTop, { width: 80, align: 'right' })
+    doc.text(`$${invoice.amount.toFixed(2)}`, 475, rowTop, { width: 60, align: 'right' })
+
+    // Line
+    doc.moveTo(50, rowTop + 25).lineTo(545, rowTop + 25).stroke('#cccccc')
+
+    // Totals
+    const totalsTop = rowTop + 40
+    doc.fontSize(10).font('Helvetica')
+    doc.text('Subtotal:', 380, totalsTop, { width: 80, align: 'right' })
+    doc.text(`$${invoice.amount.toFixed(2)}`, 475, totalsTop, { width: 60, align: 'right' })
+
+    if (invoice.taxAmount) {
+      doc.text('Impuesto:', 380, totalsTop + 18, { width: 80, align: 'right' })
+      doc.text(`$${invoice.taxAmount.toFixed(2)}`, 475, totalsTop + 18, { width: 60, align: 'right' })
+    }
+
+    doc.moveTo(380, totalsTop + 38).lineTo(545, totalsTop + 38).stroke('#cccccc')
+    doc.fontSize(12).font('Helvetica-Bold')
+    doc.text('Total:', 380, totalsTop + 45, { width: 80, align: 'right' })
+    doc.text(`$${invoice.total.toFixed(2)}`, 465, totalsTop + 45, { width: 70, align: 'right' })
+
+    // Footer
+    doc.fontSize(8).font('Helvetica').fillColor('#999999')
+    doc.text(
+      `© ${new Date().getFullYear()} Cloud Vertice. Todos los derechos reservados.`,
+      50,
+      doc.page.height - 50,
+      { align: 'center' }
+    )
+
+    doc.end()
   } catch (error) {
     next(error)
   }

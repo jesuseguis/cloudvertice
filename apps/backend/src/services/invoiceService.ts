@@ -81,6 +81,14 @@ export class InvoiceService {
             product: true,
           },
         },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     })
 
@@ -126,7 +134,11 @@ export class InvoiceService {
     const taxAmount = totalAmount * 0.1
     const total = totalAmount + taxAmount
 
-    // Due date (30 days from now)
+    // If order is already paid/completed, mark invoice as paid
+    const isPaid = ['PAID', 'PROCESSING', 'PROVISIONING', 'COMPLETED'].includes(order.status)
+    const now = new Date()
+
+    // Due date (30 days from now, or now if already paid)
     const dueDate = new Date()
     dueDate.setDate(dueDate.getDate() + 30)
 
@@ -139,8 +151,9 @@ export class InvoiceService {
         amount: totalAmount,
         taxAmount,
         total,
-        status: 'PENDING',
+        status: isPaid ? 'PAID' : 'PENDING',
         dueDate,
+        paidAt: isPaid ? (order.paidAt || now) : null,
       },
       include: {
         order: {
