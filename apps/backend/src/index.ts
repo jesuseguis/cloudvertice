@@ -22,6 +22,7 @@ import { invoiceRouter } from './routes/invoices'
 import { ticketRouter } from './routes/tickets'
 import { regionRouter } from './routes/regions'
 import { operatingSystemRouter } from './routes/operating-systems'
+import { settingsRouter } from './routes/settings'
 
 // Load environment variables from explicit path
 dotenv.config({ path: path.join(__dirname, '../.env') })
@@ -82,6 +83,7 @@ app.use('/api/invoices', invoiceRouter)
 app.use('/api/tickets', ticketRouter)
 app.use('/api/regions', regionRouter)
 app.use('/api/operating-systems', operatingSystemRouter)
+app.use('/api/admin/settings', settingsRouter)
 
 // Error handling
 app.use(notFoundHandler)

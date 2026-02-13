@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { NotFoundError, BadRequestError } from '../middleware/errorHandler'
+import { settingsService } from './settingsService'
 
 const prisma = new PrismaClient()
 
@@ -129,9 +130,10 @@ export class InvoiceService {
     // Generate invoice number
     const invoiceNumber = await this.generateInvoiceNumber()
 
-    // Calculate tax (10% for example)
+    // Calculate tax from settings
+    const taxRate = Number(await settingsService.get('tax_rate') || '0.19')
     const totalAmount = Number(order.totalAmount)
-    const taxAmount = totalAmount * 0.1
+    const taxAmount = totalAmount * taxRate
     const total = totalAmount + taxAmount
 
     // If order is already paid/completed, mark invoice as paid
@@ -413,9 +415,10 @@ export class InvoiceService {
         // Generate invoice number
         const invoiceNumber = await this.generateInvoiceNumber()
 
-        // Calculate tax (10% for example)
+        // Calculate tax from settings
+        const taxRate = Number(await settingsService.get('tax_rate') || '0.19')
         const totalAmount = Number(order.totalAmount)
-        const taxAmount = totalAmount * 0.1
+        const taxAmount = totalAmount * taxRate
         const total = totalAmount + taxAmount
 
         // Due date (30 days from order creation)

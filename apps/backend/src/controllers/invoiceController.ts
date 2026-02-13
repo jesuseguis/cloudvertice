@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import PDFDocument from 'pdfkit'
 import { invoiceService } from '../services/invoiceService'
+import { settingsService } from '../services/settingsService'
 import { NotFoundError } from '../middleware/errorHandler'
 
 /**
@@ -196,6 +197,14 @@ export async function downloadInvoicePdf(req: Request, res: Response, next: Next
     }
 
     const invoice = await invoiceService.getInvoiceById(id, req.user.userId, req.user.role === 'ADMIN')
+    const settings = await settingsService.getAll()
+
+    const companyName = settings.company_name || 'Cloud Vertice'
+    const companyWebsite = settings.company_website || 'cloud.vertice.com.co'
+    const companyAddress = settings.company_address || ''
+    const companyPhone = settings.company_phone || ''
+    const companyNit = settings.company_nit || ''
+    const invoiceNotes = settings.invoice_notes || ''
 
     const doc = new PDFDocument({ size: 'A4', margin: 50 })
 
@@ -203,9 +212,18 @@ export async function downloadInvoicePdf(req: Request, res: Response, next: Next
     res.setHeader('Content-Disposition', `attachment; filename=factura-${invoice.invoiceNumber}.pdf`)
     doc.pipe(res)
 
-    // Header
-    doc.fontSize(24).font('Helvetica-Bold').text('Cloud Vertice', { align: 'left' })
-    doc.fontSize(10).font('Helvetica').text('cloud.vertice.com.co', { align: 'left' })
+    // Header - Company info
+    doc.fontSize(24).font('Helvetica-Bold').text(companyName, { align: 'left' })
+    doc.fontSize(10).font('Helvetica').text(companyWebsite, { align: 'left' })
+    if (companyAddress) {
+      doc.text(companyAddress, { align: 'left' })
+    }
+    if (companyPhone) {
+      doc.text(`Tel: ${companyPhone}`, { align: 'left' })
+    }
+    if (companyNit) {
+      doc.text(`NIT: ${companyNit}`, { align: 'left' })
+    }
     doc.moveDown(0.5)
 
     // Invoice title
@@ -247,26 +265,42 @@ export async function downloadInvoicePdf(req: Request, res: Response, next: Next
     doc.text('Precio', 390, tableTop + 7, { width: 80, align: 'right' })
     doc.text('Total', 475, tableTop + 7, { width: 60, align: 'right' })
 
-    // Table row
+    // Table row - Product with VPS specs
+    const product = invoice.order?.product
+    let productName = product?.name || 'Servicio VPS'
+    const productSpecs: string[] = []
+    if (product) {
+      if (product.cpuCores) productSpecs.push(`${product.cpuCores} vCPU`)
+      if (product.ramMb) productSpecs.push(`${Math.round(product.ramMb / 1024)} GB RAM`)
+      if (product.diskGb) productSpecs.push(`${product.diskGb} GB ${product.diskType || 'SSD'}`)
+    }
+
     const rowTop = tableTop + 30
-    doc.fillColor('#333333').font('Helvetica')
-    const productName = invoice.order?.product?.name || 'Servicio VPS'
+    doc.fillColor('#333333').font('Helvetica-Bold')
     doc.text(productName, 60, rowTop, { width: 250 })
+    if (productSpecs.length > 0) {
+      doc.font('Helvetica').fontSize(8).fillColor('#666666')
+      doc.text(productSpecs.join(' • '), 60, rowTop + 14, { width: 250 })
+    }
+    doc.fillColor('#333333').font('Helvetica').fontSize(10)
     doc.text('1', 320, rowTop, { width: 60, align: 'center' })
     doc.text(`$${invoice.amount.toFixed(2)}`, 390, rowTop, { width: 80, align: 'right' })
     doc.text(`$${invoice.amount.toFixed(2)}`, 475, rowTop, { width: 60, align: 'right' })
 
-    // Line
-    doc.moveTo(50, rowTop + 25).lineTo(545, rowTop + 25).stroke('#cccccc')
+    // Line after row
+    const rowBottomY = productSpecs.length > 0 ? rowTop + 35 : rowTop + 25
+    doc.moveTo(50, rowBottomY).lineTo(545, rowBottomY).stroke('#cccccc')
 
     // Totals
-    const totalsTop = rowTop + 40
+    const totalsTop = rowBottomY + 15
     doc.fontSize(10).font('Helvetica')
     doc.text('Subtotal:', 380, totalsTop, { width: 80, align: 'right' })
     doc.text(`$${invoice.amount.toFixed(2)}`, 475, totalsTop, { width: 60, align: 'right' })
 
     if (invoice.taxAmount) {
-      doc.text('Impuesto:', 380, totalsTop + 18, { width: 80, align: 'right' })
+      const taxRate = Number(settings.tax_rate || '0.19')
+      const taxPercent = Math.round(taxRate * 100)
+      doc.text(`Impuesto (${taxPercent}%):`, 360, totalsTop + 18, { width: 100, align: 'right' })
       doc.text(`$${invoice.taxAmount.toFixed(2)}`, 475, totalsTop + 18, { width: 60, align: 'right' })
     }
 
@@ -275,10 +309,17 @@ export async function downloadInvoicePdf(req: Request, res: Response, next: Next
     doc.text('Total:', 380, totalsTop + 45, { width: 80, align: 'right' })
     doc.text(`$${invoice.total.toFixed(2)}`, 465, totalsTop + 45, { width: 70, align: 'right' })
 
+    // Invoice notes
+    if (invoiceNotes) {
+      doc.moveDown(4)
+      doc.fontSize(8).font('Helvetica').fillColor('#666666')
+      doc.text(invoiceNotes, 50, doc.y, { width: 495 })
+    }
+
     // Footer
     doc.fontSize(8).font('Helvetica').fillColor('#999999')
     doc.text(
-      `© ${new Date().getFullYear()} Cloud Vertice. Todos los derechos reservados.`,
+      `© ${new Date().getFullYear()} ${companyName}. Todos los derechos reservados.`,
       50,
       doc.page.height - 50,
       { align: 'center' }

@@ -531,6 +531,14 @@ export const adminApi = {
       request<void>('delete', API_ENDPOINTS.admin.invoices.delete(id)),
   },
 
+  settings: {
+    get: () =>
+      request<Record<string, string>>('get', API_ENDPOINTS.admin.settings),
+
+    update: (data: Record<string, string>) =>
+      request<Record<string, string>>('put', API_ENDPOINTS.admin.settings, data),
+  },
+
   alerts: () =>
     request<Array<{ type: string; message: string; severity: 'info' | 'warning' | 'error' }>>(
       'get',

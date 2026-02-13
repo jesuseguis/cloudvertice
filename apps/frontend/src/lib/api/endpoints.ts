@@ -133,6 +133,7 @@ export const API_ENDPOINTS = {
       delete: (id: string) => `${API_BASE}/invoices/admin/${id}`,
       updateStatus: (id: string) => `${API_BASE}/invoices/admin/${id}/status`,
     },
+    settings: `${API_BASE}/admin/settings`,
     alerts: `${API_BASE}/admin/alerts`,
     activity: `${API_BASE}/admin/activity`,
     contaboInstances: `${API_BASE}/admin/contabo/instances`,

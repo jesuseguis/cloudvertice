@@ -603,3 +603,32 @@ export function useAdminOperatingSystems() {
     isSyncing: syncMutation.isPending,
   }
 }
+
+export function useAdminSettings() {
+  const queryClient = useQueryClient()
+  const { success, error: toastError } = useToast()
+
+  const query = useQuery({
+    queryKey: ['admin', 'settings'],
+    queryFn: () => adminApi.settings.get(),
+    staleTime: 60000,
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: (data: Record<string, string>) => adminApi.settings.update(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] })
+      success('Configuración guardada correctamente')
+    },
+    onError: (err) => {
+      toastError(getErrorMessage(err) || 'Error al guardar configuración', 'Error')
+    },
+  })
+
+  return {
+    settings: query.data,
+    isLoading: query.isLoading,
+    updateSettings: updateMutation.mutate,
+    isUpdating: updateMutation.isPending,
+  }
+}
