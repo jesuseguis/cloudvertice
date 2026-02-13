@@ -1,6 +1,7 @@
 'use client'
 
 import { useClientInvoices } from '@/lib/hooks/use-orders'
+import { invoicesApi } from '@/lib/api/client'
 import { Header } from '@/components/layout/header'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -194,6 +195,7 @@ export default function BillingPage() {
                         variant="outline"
                         size="icon"
                         className="h-8 w-8"
+                        onClick={() => invoicesApi.downloadPdf(invoice.id, invoice.invoiceNumber)}
                       >
                         <Download className="h-4 w-4" />
                       </Button>
